@@ -1,45 +1,56 @@
 export const stubTree = [
     {
-        id: 'node1',
+        id: '1',
         name: 'Node 1',
-        type: 'node'
+        createdAt: "2020-09-22 13:45:50.004T",
+        content: "A <i>quick</i> brown <b>fox</b> jumps over the <s>lazy</s> dog",
+        children: []
     },
     {
-        id: 'fld1',
+        id: '2',
         name: 'Folder 1',
-        type: 'folder',
+        createdAt: "2020-09-22 13:45:50.004T",
         children: [
             {
-                id: 'fldNode1',
+                id: '3',
                 name: 'Folder 1 node 1',
-                type: 'node'
+                createdAt: "2020-09-22 13:45:50.004T",
+                type: 'node',
+                content: 'salut',
+                children: []
             }
         ]
     },
     {
-        id: 'fld2',
+        id: '4',
         name: 'Folder 2',
-        type: 'folder',
+        createdAt: "2020-09-22 13:45:50.004T",
         children: [
             {
-                id: 'fld2Node1',
+                id: '5',
                 name: 'Folder 2 node 1',
-                type: 'node'
+                createdAt: "2020-09-22 13:45:50.004T",
+                content: 'wow',
+                children: []
             },
             {
-                id: 'fld2Node2',
+                id: '6',
                 name: 'Folder 2 node 2',
-                type: 'node'
+                createdAt: "2020-09-22 13:45:50.004T",
+                content: 'such awesome',
+                children: []
             },
             {
-                id: 'fld2Fld1',
+                id: '7',
                 name: 'Folder 2 Folder 1',
-                type: 'folder',
+                createdAt: "2020-09-22 13:45:50.004T",
                 children: [
                     {
-                        id: 'fld2Fld1Node1',
+                        id: '8',
                         name: 'Folder 2 Folder 1 Node 1',
-                        type: 'node'
+                        createdAt: "2020-09-22 13:45:50.004T",
+                        content: 'docs',
+                        children: []
                     }
                 ]
             },

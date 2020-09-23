@@ -1,24 +1,71 @@
 import React from 'react';
 import clsx from 'clsx';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
+
 import {AccountCircle} from '@material-ui/icons';
 import MenuIcon from '@material-ui/icons/Menu';
-import {Menu, MenuItem} from '@material-ui/core';
-import classes from "./styles";
-import TreeDrawer from '../TreeDrawer/TreeDrawer';
-import Button from "@material-ui/core/Button";
+import {
+    Menu,
+    MenuItem,
+    Toolbar,
+    Typography,
+    Button,
+    IconButton,
+    CssBaseline,
+    AppBar
+} from '@material-ui/core';
 
+import styles from "./styles";
+import TreeDrawer from '../TreeDrawer/TreeDrawer';
+import Box from "@material-ui/core/Box";
+import ClickAwayListener from "@material-ui/core/ClickAwayListener";
+
+const NavigationTitle = ({title, openDrawer, handleDrawer}) => <Box
+    display={'flex'}
+    alignItems={'center'}
+    flexGrow={1}>
+    <IconButton
+        color="inherit"
+        aria-label="open drawer"
+        onClick={handleDrawer}
+        edge="start"
+        className={clsx(styles.menuButton, openDrawer && styles.hide)}
+    >
+        <MenuIcon/>
+    </IconButton>
+    <Typography variant="h6" noWrap>
+        {title}
+    </Typography>
+</Box>;
+
+
+const UserControls = ({handleMenu, handleLogout}) => <Box>
+    <IconButton
+        aria-label="account of current user"
+        aria-controls="menu-appbar"
+        aria-haspopup="true"
+        color="inherit"
+        onClick={handleMenu}
+    >
+        <AccountCircle/>
+    </IconButton>
+    <Button color={'inherit'} onClick={handleLogout}>Logout</Button>
+</Box>;
+
+const GuestControls = ({handleLogin}) => <Box>
+    <Button color="inherit" onClick={handleLogin}>Login</Button>
+</Box>;
 
 export default class NavigationBar extends React.Component {
 
     state = {
+        loggedIn: false,
         openDrawer: false,
         openMenu: false
     }
+
+    handleClickAway = () => {
+        this.setState({openDrawer: false});
+    };
 
     handleDrawer = () => {
         const {openDrawer} = this.state;
@@ -30,65 +77,51 @@ export default class NavigationBar extends React.Component {
         this.setState({openMenu: !openMenu});
     };
 
+    handleDrawerClosed = () => {
+        this.setState({openDrawer: false});
+    };
+
     render() {
         const {title} = this.props;
 
-        const {openDrawer, openMenu} = this.state;
+        const {loggedIn, openDrawer} = this.state;
 
 
         return (
-            <div className={classes.root}>
+            <div className={styles.root}>
                 <CssBaseline/>
                 <AppBar
                     position="fixed"
-                    className={clsx(classes.appBar, {
-                        [classes.appBarShift]: openDrawer,
+                    className={clsx(styles.appBar, {
+                        [styles.appBarShift]: openDrawer,
                     })}
                 >
-                    <Toolbar>
-                        <IconButton
-                            color="inherit"
-                            aria-label="open drawer"
-                            onClick={this.handleDrawer}
-                            edge="start"
-                            className={clsx(classes.menuButton, openDrawer && classes.hide)}
-                        >
-                            <MenuIcon/>
-                        </IconButton>
-                        <Typography variant="h6" noWrap>
-                            {title}
-                        </Typography>
-                        <div>
-                            <IconButton
-                                aria-label="account of current user"
-                                aria-controls="menu-appbar"
-                                aria-haspopup="true"
-                                color="inherit"
-                                onClick={this.handleMenu}
-                            >
-                                <AccountCircle/>
-                            </IconButton>
-                            <Menu
-                                id="menu-appbar"
-                                anchorEl={'IconButton'}
-                                keepMounted
-                                open={openMenu}
-                            >
-                                <MenuItem>Profile</MenuItem>
-                                <MenuItem>My account</MenuItem>
-                            </Menu>
-                        </div>
-                        <Button style={{right: '0px'}} color="inherit">Login</Button>
+                    <Toolbar
+                        display={'flex'}>
+                        <NavigationTitle
+                            openDrawer={openDrawer}
+                            handleDrawer={this.handleDrawer}
+                            title={title}
+                        />
+                        {
+                            loggedIn ?
+                                <UserControls handleMenu={this.handleMenu} handleLogout={this.handleLogout}/>
+                                :
+                                <GuestControls handleLogin={this.handleLogin}/>
+                        }
                     </Toolbar>
                 </AppBar>
-                <TreeDrawer open={openDrawer}/>
-                <main
-                    className={clsx(classes.content, {
-                        [classes.contentShift]: openDrawer,
-                    })}
-                >
-                </main>
+                <TreeDrawer open={openDrawer} onDrawerClosed={this.handleDrawerClosed}/>
             </div>
         );
     }
+
+    handleLogin = () => {
+        this.setState({loggedIn: true});
+    }
+
+    handleLogout = () => {
+        this.setState({loggedIn: false});
+    }
+
 }
