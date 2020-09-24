@@ -6,6 +6,8 @@ import DocumentPage from "./components/pages/DocumentPage/DocumentPage";
 import {Typography} from "@material-ui/core";
 import DocumentEditor from './components/single/DocumentEditor/DocumentEditor';
 
+import DocumentApiInterface from './api/document';
+
 class App extends React.Component {
 
     APP_TITLE = "GPKS";
@@ -17,6 +19,11 @@ class App extends React.Component {
     onReadOnlyModeEnabled = (readOnly) => {
         this.setState({readOnly});
     };
+
+    componentDidMount() {
+        const api = new DocumentApiInterface("http://localhost:3001");
+        api.listDocuments();
+    }
 
     render() {
         const {readOnly} = this.state;
