@@ -56,6 +56,9 @@ const classes = theme => ({
         }),
         marginLeft: 0,
     },
+    link: {
+        textDecoration: 'none'
+    }
 });
 
 export default classes;

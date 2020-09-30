@@ -8,7 +8,7 @@ const countChildren = (children) => {
 };
 
 const stripContent = (content) => {
-    const ALLOWED_PREVIEW_CHAR_COUNT = 200;
+    const ALLOWED_PREVIEW_CHAR_COUNT = 20;
     let contentStripped = content;
     if(content.length > ALLOWED_PREVIEW_CHAR_COUNT)
     {

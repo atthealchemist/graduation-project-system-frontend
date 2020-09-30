@@ -6,6 +6,7 @@ import {countChildren, stripContent} from '../../../utils/utils';
 import {Typography} from "@material-ui/core";
 import Box from "@material-ui/core/Box";
 
+
 const TreeItemContent = ({title, count = 0}) =>
     <Box p={'.5em'} display={'flex'} flexDirection={'row'} alignContent={'center'}>
         <Box display={'flex'} flexGrow={1} alignItems={'center'}>
@@ -17,35 +18,40 @@ const TreeItemContent = ({title, count = 0}) =>
         </Box>
     </Box>;
 
-const DocumentTreeItem =
-    ({
-         nodeId,
-         title,
-         description,
-         children,
-         content
-     }) =>
-        content ?
-            <ContentPreviewTooltip
-                title={title}
-                description={description}
-                content={content && stripContent(content)}
-                placement={'right'}
-            >
-                <TreeItem
-                    nodeId={nodeId}
-                    label={
-                        <TreeItemContent title={title} count={children && countChildren(children)}/>
-                    }
-                >{children}</TreeItem>
-            </ContentPreviewTooltip>
-            :
-            <TreeItem
-                nodeId={nodeId}
-                label={
-                    <TreeItemContent title={title} count={children && countChildren(children)}/>
-                }
-            >{children}</TreeItem>
-;
+const styles = {
+    link: {
+        textDecoration: 'none',
+        color: 'inherit'
+    }
+};
+
+const DocumentTreeItem = props => {
+
+    const {
+        nodeId,
+        title,
+        description,
+        children,
+        content
+    } = props;
+
+    const node = <TreeItem
+        nodeId={nodeId}
+        label={
+            <TreeItemContent title={title} count={children && countChildren(children)}/>
+        }
+    >{children}</TreeItem>;
+
+    const nodeWithTooltip = <ContentPreviewTooltip
+        title={title}
+        description={description}
+        content={content && stripContent(content)}
+        placement={'right'}
+    >
+        {node}
+    </ContentPreviewTooltip>;
+
+    return content ? nodeWithTooltip : node;
+};
 
 export default DocumentTreeItem;

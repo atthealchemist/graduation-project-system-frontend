@@ -5,6 +5,10 @@ const styles = {
     },
     drawerList: {
         marginTop: '0em'
+    },
+    link: {
+        textDecoration: 'none',
+        color: 'inherit'
     }
 };
 export default styles;

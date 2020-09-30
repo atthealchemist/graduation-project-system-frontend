@@ -10,6 +10,17 @@ import TreeView from "@material-ui/lab/TreeView";
 import ExpandLessIcon from '@material-ui/icons/ExpandLess/';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight/';
 import Moment from "react-moment";
+import convert from 'htmr';
+
+import {Link} from 'react-router-dom';
+
+const FormattedDateLabel = ({date, caption, parseFormat="YYYY-MM-DD HH:mm", displayFormat="DD.MM.YYYY HH:mm"}) => <Box display={'flex'} flexDirection={'row'}>
+    <Typography style={{marginRight: '.25em'}}>{caption}: </Typography>
+    <Moment format={displayFormat} parse={parseFormat}>
+        {date}
+    </Moment>
+</Box>;
+
 
 export default class TreeDrawer extends React.Component {
 
@@ -18,23 +29,20 @@ export default class TreeDrawer extends React.Component {
         expandedNodes: []
     };
 
-    renderNode = (node) =>
-        <DocumentTreeItem
-            key={node.id}
-            nodeId={node.id}
-            title={node.name}
-            description={
-                <Box display={'flex'} flexDirection={'row'}>
-                    <Typography style={{marginRight: '.25em'}}>Created at: </Typography>
-                    <Moment format="DD.MM.YYYY HH:mm" parse="YYYY-MM-DD HH:mm">
-                        {new Date()}
-                    </Moment>
-                </Box>
-            }
-            content={node.content}
-        >
-            {node.children.map((child) => this.renderNode(child))}
-        </DocumentTreeItem>;
+    renderNode = (node, idx) =>
+        <Link key={idx} to={`/documents/${node.id}`} style={styles.link}>
+            <DocumentTreeItem
+                key={idx}
+                nodeId={node.id}
+                title={node.name}
+                description={
+                    <FormattedDateLabel caption={"Created at"} date={new Date()}/>
+                }
+                content={node.content && convert(node.content)}
+            >
+                {node.children.map((child, idx) => this.renderNode(child, idx))}
+            </DocumentTreeItem>
+        </Link>;
 
     handleNodeSelect = (event, nodeIds) => {
         console.log('selected nodes: ' + nodeIds)
@@ -52,7 +60,6 @@ export default class TreeDrawer extends React.Component {
     render() {
 
         const {open} = this.props;
-        // const { data } = this.props;
 
         const {selectedNodes, expandedNodes} = this.state;
 
@@ -80,7 +87,7 @@ export default class TreeDrawer extends React.Component {
                 onNodeSelect={this.handleNodeSelect}
                 onNodeToggle={this.handleNodeToggle}
                 style={styles.drawerList}>
-                {stubTree.map(node => this.renderNode(node))}
+                {stubTree.map((node, idx) => this.renderNode(node, idx))}
             </TreeView>
         </Drawer>;
     }

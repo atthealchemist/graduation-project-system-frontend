@@ -14,10 +14,14 @@ import {
     AppBar
 } from '@material-ui/core';
 
-import styles from "./styles";
+import classes from "./styles";
+
 import TreeDrawer from '../TreeDrawer/TreeDrawer';
 import Box from "@material-ui/core/Box";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
+import {Link} from "react-router-dom";
+import {ButtonLink} from "../../single/ButtonLink/ButtonLink";
+
 
 const NavigationTitle = ({title, openDrawer, handleDrawer}) => <Box
     display={'flex'}
@@ -28,31 +32,29 @@ const NavigationTitle = ({title, openDrawer, handleDrawer}) => <Box
         aria-label="open drawer"
         onClick={handleDrawer}
         edge="start"
-        className={clsx(styles.menuButton, openDrawer && styles.hide)}
+        className={clsx(classes.menuButton, openDrawer && classes.hide)}
     >
         <MenuIcon/>
     </IconButton>
     <Typography variant="h6" noWrap>
         {title}
     </Typography>
+    <Box ml={3}>
+        <ButtonLink to={'/dashboard'} color={'inherit'}>Dashboard</ButtonLink>
+    </Box>
 </Box>;
 
 
 const UserControls = ({handleMenu, handleLogout}) => <Box>
-    <IconButton
-        aria-label="account of current user"
-        aria-controls="menu-appbar"
-        aria-haspopup="true"
-        color="inherit"
-        onClick={handleMenu}
-    >
+    <ButtonLink isIcon to={'/account'} color="inherit" onClick={handleMenu}>
         <AccountCircle/>
-    </IconButton>
-    <Button color={'inherit'} onClick={handleLogout}>Logout</Button>
+    </ButtonLink>
+    <ButtonLink to={'/logout'} color={'inherit'} onClick={handleLogout}>Logout</ButtonLink>
 </Box>;
 
 const GuestControls = ({handleLogin}) => <Box>
-    <Button color="inherit" onClick={handleLogin}>Login</Button>
+    <ButtonLink to={'/register'} color={'inherit'} onClick={handleLogin}>Register</ButtonLink>
+    <ButtonLink to={'/login'} color={'inherit'} onClick={handleLogin}>Login</ButtonLink>
 </Box>;
 
 export default class NavigationBar extends React.Component {
@@ -88,12 +90,12 @@ export default class NavigationBar extends React.Component {
 
 
         return (
-            <div className={styles.root}>
+            <div className={classes.root}>
                 <CssBaseline/>
                 <AppBar
                     position="fixed"
-                    className={clsx(styles.appBar, {
-                        [styles.appBarShift]: openDrawer,
+                    className={clsx(classes.appBar, {
+                        [classes.appBarShift]: openDrawer,
                     })}
                 >
                     <Toolbar

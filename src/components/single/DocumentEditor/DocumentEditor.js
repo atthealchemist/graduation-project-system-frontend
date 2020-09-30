@@ -1,16 +1,117 @@
 import React, {Component} from 'react';
 
-import MUIEditor, {MUIEditorState} from "react-mui-draft-wysiwyg";
-import {convertToRaw} from 'draft-js';
+import MUIEditor, {MUIEditorState as EditorState} from "react-mui-draft-wysiwyg";
 import options from "./options";
+import {CompositeDecorator} from 'draft-js';
+import {stateFromHTML} from "draft-js-import-html";
+
+
+const EditorLink = (props) => {
+    const {url} = props.contentState.getEntity(props.entityKey).getData();
+    return (
+        <a href={url}>
+            {props.children}
+        </a>
+    );
+};
+
+
+const EditorImage = (props) => {
+    const {
+        height,
+        src,
+        width,
+        alt
+    } = props.contentState.getEntity(props.entityKey).getData();
+
+    return (
+        <img src={src} height={height} width={width} alt={alt}/>
+    );
+};
+
+const EditorAudio = (props) => {
+    const {controls, src} = props.contentState.getEntity(props.entityKey).getData();
+    return <audio controls={controls} src={src}>
+        Your browser does not support the <code>audio</code> element.
+    </audio>
+};
+
+const EditorVideo = (props) => {
+    const {width, height, controls, src, type} = props.contentState.getEntity(props.entityKey).getData();
+    return <video width={width} height={height} controls={controls}>
+        <source src={src} type={type}/>
+        Your browser doesn't support HTML5 video tag.
+    </video>
+};
 
 
 export default class DocumentEditor extends Component {
 
     state = {
-        editorState: MUIEditorState.createEmpty(options),
+        editorState: EditorState.createEmpty(options),
         config: options
     };
+
+    componentDidMount() {
+        const {content} = this.props;
+        if (content) {
+            this.setContent(this.props.content);
+        }
+    }
+
+    findEntityRanges = (contentBlock, callback, contentState, entityType) => {
+        contentBlock.findEntityRanges(
+            (character) => {
+                const entityKey = character.getEntity();
+                return (
+                    entityKey && contentState.getEntity(entityKey).getType() === entityType
+                );
+            },
+            callback
+        );
+    }
+
+    findImageEntities = (contentBlock, callback, contentState) =>
+        this.findEntityRanges(contentBlock, callback, contentState, 'IMAGE');
+
+    findLinkEntities = (contentBlock, callback, contentState) =>
+        this.findEntityRanges(contentBlock, callback, contentState, 'LINK');
+
+    findAudioEntities = (contentBlock, callback, contentState) =>
+        this.findEntityRanges(contentBlock, callback, contentState, 'AUDIO');
+
+    findVideoEntities = (contentBlock, callback, contentState) =>
+        this.findEntityRanges(contentBlock, callback, contentState, 'VIDEO');
+
+
+    setContent(content) {
+        const contentState = stateFromHTML(content);
+
+        const decorator = new CompositeDecorator([
+            {
+                strategy: this.findLinkEntities,
+                component: EditorLink,
+            },
+            {
+                strategy: this.findImageEntities,
+                component: EditorImage,
+            },
+            {
+                strategy: this.findAudioEntities,
+                component: EditorAudio,
+            },
+            {
+                strategy: this.findVideoEntities,
+                component: EditorVideo,
+            },
+        ]);
+
+
+        this.setState({
+            editorState: EditorState.createWithContent(this.state.config, contentState),
+        });
+        console.log("Setup content")
+    }
 
     onEditorStateChange = (editorState) => {
         this.setState({editorState});

@@ -1,11 +1,9 @@
 import React from 'react';
 import Tooltip from "@material-ui/core/Tooltip";
-import {CardHeader, Container, Typography, withStyles} from "@material-ui/core";
+import {CardHeader, Typography, withStyles} from "@material-ui/core";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
-import Divider from "@material-ui/core/Divider";
 
-const parseHtml = require('html-react-parser');
 
 const LightTooltip = withStyles((theme) => ({
     arrow: {

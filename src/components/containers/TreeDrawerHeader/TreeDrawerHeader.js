@@ -18,15 +18,3 @@ const TreeDrawerHeader = ({user}) =>
     </Container>;
 
 export default TreeDrawerHeader;
-
-// export default class TreeDrawerHeader extends React.Component {
-//
-//     state = {};
-//
-//     render() {
-//         const {user} = this.props;
-//
-//         return
-//     };
-//
-// }

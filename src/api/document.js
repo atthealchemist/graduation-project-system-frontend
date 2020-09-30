@@ -2,7 +2,7 @@ import axios from 'axios';
 
 import BaseApiInterface from './base';
 
-export default class DocumentApiInterface extends BaseApiInterface {
+class DocumentApiInterface extends BaseApiInterface {
 
 
     getDocument(){
