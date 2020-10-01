@@ -16,7 +16,7 @@ export const stubTree = [
             "            Your browser does not support the\n" +
             "            <code>audio</code> element.\n" +
             "    </audio>" +
-            "aaaaaa<marquee>This text will scroll from right to left</marquee>",
+            "",
         children: []
     },
     {
@@ -28,7 +28,10 @@ export const stubTree = [
                 id: '3',
                 name: 'Folder 1 node 1',
                 createdAt: "2020-09-22 13:45:50.004T",
-                type: 'node',
+                author: {
+                    displayName: "Hanyuu",
+                    avatar: "http://lorempixel.com/200/200/"
+                },
                 content: 'salut',
                 children: []
             }
@@ -63,12 +66,16 @@ export const stubTree = [
             },
             {
                 id: '7',
-                name: 'Folder 2 Folder 1',
+                name: 'Inner test stuff',
                 createdAt: "2020-09-22 13:45:50.004T",
                 children: [
                     {
                         id: '8',
-                        name: 'Folder 2 Folder 1 Node 1',
+                        name: 'Inner test stuff node',
+                        author: {
+                            displayName: "Hanyuu",
+                            avatar: "http://lorempixel.com/200/200/"
+                        },
                         createdAt: "2020-09-22 13:45:50.004T",
                         content: 'docs',
                         children: []

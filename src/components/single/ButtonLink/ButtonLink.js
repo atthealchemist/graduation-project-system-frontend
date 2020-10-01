@@ -1,8 +1,7 @@
-import Button from "@material-ui/core/Button";
 import {Link} from "react-router-dom";
 
 import React from 'react';
-import IconButton from "@material-ui/core/IconButton";
+import {Button} from "@material-ui/core";
 
 const styles = {
     link: {
@@ -11,7 +10,14 @@ const styles = {
     }
 };
 
-export const ButtonLink = ({to, color, children, onClick, isIcon}) => <Link style={styles.link} to={to}>
-    {isIcon ? <IconButton color={color} onClick={onClick}>{children}</IconButton> :
-        <Button onClick={onClick} color={color}>{children}</Button>}
-</Link>;
+export const ButtonLink = ({to, color = 'inherit', children, onClick, component = Button}) => {
+
+    const Component = component;
+
+    return (
+        <Link style={styles.link} to={to}>
+            <Component color={color} onClick={onClick}>{children}</Component>
+        </Link>
+    );
+
+};

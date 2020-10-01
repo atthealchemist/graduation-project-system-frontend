@@ -11,7 +11,7 @@ import {
     Button,
     IconButton,
     CssBaseline,
-    AppBar
+    AppBar, Avatar, Divider
 } from '@material-ui/core';
 
 import classes from "./styles";
@@ -23,7 +23,7 @@ import {Link} from "react-router-dom";
 import {ButtonLink} from "../../single/ButtonLink/ButtonLink";
 
 
-const NavigationTitle = ({title, openDrawer, handleDrawer}) => <Box
+const NavigationTitle = ({title, path, openDrawer, handleDrawer}) => <Box
     display={'flex'}
     alignItems={'center'}
     flexGrow={1}>
@@ -39,28 +39,42 @@ const NavigationTitle = ({title, openDrawer, handleDrawer}) => <Box
     <Typography variant="h6" noWrap>
         {title}
     </Typography>
-    <Box ml={3}>
-        <ButtonLink to={'/dashboard'} color={'inherit'}>Dashboard</ButtonLink>
-    </Box>
+    <LeftControls path={path}/>
 </Box>;
 
+const LeftControls = ({path}) => <Box ml={3}>
+    <ButtonLink to={'/dashboard'}>Dashboard</ButtonLink>
+</Box>;
 
-const UserControls = ({handleMenu, handleLogout}) => <Box>
-    <ButtonLink isIcon to={'/account'} color="inherit" onClick={handleMenu}>
-        <AccountCircle/>
+const Author = ({name, image}) =>
+    <Box mr={'1em'} style={{display: 'flex', alignItems: 'center'}}>
+        <Typography variant="subtitle2" style={{margin: '0 1em', color: 'inherit'}}>Welcome back, <strong>{name}</strong>!</Typography>
+        <Avatar
+            style={{width: 25, height: 25}}
+            alt="Remy Sharp"
+            src={image}/>
+    </Box>;
+
+
+const UserControls = ({handleMenu, handleLogout}) => <Box style={{display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'center'}}>
+    <Author image={"https://lorempixel.com/25/25/"} name={'hanyuu'}/>
+    <ButtonLink to={'/account'} onClick={handleMenu}>
+        Account
     </ButtonLink>
-    <ButtonLink to={'/logout'} color={'inherit'} onClick={handleLogout}>Logout</ButtonLink>
+    <ButtonLink to={'/logout'} onClick={handleLogout}>Logout</ButtonLink>
 </Box>;
 
 const GuestControls = ({handleLogin}) => <Box>
-    <ButtonLink to={'/register'} color={'inherit'} onClick={handleLogin}>Register</ButtonLink>
-    <ButtonLink to={'/login'} color={'inherit'} onClick={handleLogin}>Login</ButtonLink>
+    <ButtonLink to={'/register'} onClick={handleLogin}>Register</ButtonLink>
+    <ButtonLink to={'/login'} onClick={handleLogin}>Login</ButtonLink>
 </Box>;
 
 export default class NavigationBar extends React.Component {
 
     state = {
-        loggedIn: false,
         openDrawer: false,
         openMenu: false
     }
@@ -84,9 +98,10 @@ export default class NavigationBar extends React.Component {
     };
 
     render() {
-        const {title} = this.props;
+        const {title, path} = this.props;
 
-        const {loggedIn, openDrawer} = this.state;
+        const {openDrawer} = this.state;
+        const {loggedIn} = this.props;
 
 
         return (
@@ -104,6 +119,7 @@ export default class NavigationBar extends React.Component {
                             openDrawer={openDrawer}
                             handleDrawer={this.handleDrawer}
                             title={title}
+                            path={path}
                         />
                         {
                             loggedIn ?
@@ -118,12 +134,8 @@ export default class NavigationBar extends React.Component {
         );
     }
 
-    handleLogin = () => {
-        this.setState({loggedIn: true});
-    }
+    handleLogin = () => this.props.onAuthChanged(true);
 
-    handleLogout = () => {
-        this.setState({loggedIn: false});
-    }
+    handleLogout = () => this.props.onAuthChanged(false);
 
 }

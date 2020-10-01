@@ -1,10 +1,36 @@
 
 
+const findInTree = (tree, id) => {
+    // console.log("Tree:", tree)
+    let res = {};
+    tree.map(node => {
+        if (node.content && node.content.length > 0) {
+            if(node.id === id)
+                res = node;
+        }
+        if (node.children && node.children.length > 0) {
+            let child = findInTree(node.children, id);
+            if(child.id === id)
+                res = child;
+        }
+        return res;
+    });
+    console.log("Result: ", res);
+    return res;
+};
 
 const countChildren = (children) => {
-    let len = children.length;
-    children.map(c => c.children ? len += this.countChildren(c.children) : 1);
-    return len;
+    let count = 0;
+    children.map(child => {
+        if(child.content && child.content.length > 0){
+            count++;
+        }
+        if(child.children && child.children.length > 0){
+            count += countChildren(child.children);
+        }
+        return count;
+    });
+    return count;
 };
 
 const stripContent = (content) => {
@@ -18,6 +44,7 @@ const stripContent = (content) => {
 };
 
 export {
+    findInTree,
     countChildren,
     stripContent
 };

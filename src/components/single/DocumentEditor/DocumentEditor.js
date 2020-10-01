@@ -4,6 +4,7 @@ import MUIEditor, {MUIEditorState as EditorState} from "react-mui-draft-wysiwyg"
 import options from "./options";
 import {CompositeDecorator} from 'draft-js';
 import {stateFromHTML} from "draft-js-import-html";
+import {stateToHTML} from "draft-js-export-html";
 
 
 const EditorLink = (props) => {
@@ -54,8 +55,10 @@ export default class DocumentEditor extends Component {
 
     componentDidMount() {
         const {content} = this.props;
+        this.setState({editorState: EditorState.createEmpty(options)});
         if (content) {
-            this.setContent(this.props.content);
+            console.log("Pasting content: ", content);
+            this.setContent(content);
         }
     }
 
@@ -116,6 +119,8 @@ export default class DocumentEditor extends Component {
     onEditorStateChange = (editorState) => {
         this.setState({editorState});
 
+        this.props.onContentChanged(stateToHTML(editorState.getCurrentContent()));
+
         // const rawContent = convertToRaw(editorState.getCurrentContent());
         // Here you can send the rawContent object to a server or whatever you want
 
@@ -133,6 +138,7 @@ export default class DocumentEditor extends Component {
                 config={config}
                 editorState={editorState}
                 onChange={this.onEditorStateChange}
+                plugins={[]}
             />
         )
     }

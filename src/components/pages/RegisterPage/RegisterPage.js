@@ -4,6 +4,7 @@ import {Visibility, VisibilityOff} from "@material-ui/icons";
 import {TooltipedButton} from "../../single/TooltipedButton/TooltipedButton";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import IconButton from "@material-ui/core/IconButton";
+import Button from "@material-ui/core/Button";
 
 export default class RegisterPage extends Component {
 
@@ -44,10 +45,10 @@ export default class RegisterPage extends Component {
                     </form>
                 </CardContent>
                 <CardActions>
-                    <TooltipedButton iconButton={false} tooltip='Register'>
+                    <TooltipedButton component={Button} tooltip='Register'>
                         REGISTER
                     </TooltipedButton>
-                    <TooltipedButton iconButton={false} tooltip="Cancel">
+                    <TooltipedButton component={Button} tooltip="Cancel">
                         CANCEL
                     </TooltipedButton>
                 </CardActions>

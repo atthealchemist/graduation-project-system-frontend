@@ -1,7 +1,32 @@
 import Tooltip from "@material-ui/core/Tooltip";
-import {Button, IconButton} from "@material-ui/core";
-import React from "react";
+import {IconButton} from "@material-ui/core";
+import React, {useState} from "react";
+import {ToggleButton} from "@material-ui/lab";
 
-export const TooltipedButton = ({tooltip, color = 'primary', iconButton = true, buttonStyle, children}) => <Tooltip title={tooltip}>
-    {iconButton ? <IconButton style={buttonStyle} color={'primary'}>{children}</IconButton> : <Button style={buttonStyle} color={color}>{children}</Button>}
-</Tooltip>;
+export const TooltipedButton = ({tooltip, color = 'primary', component = IconButton, buttonStyle, children, onClick}) => {
+    const ButtonComponent = component;
+    return (
+        <Tooltip title={tooltip}>
+            <ButtonComponent style={buttonStyle} color={color} onClick={onClick}>{children}</ButtonComponent>
+        </Tooltip>
+    );
+};
+
+export const TooltipedToggleButton = ({tooltip, color = 'inherit', buttonStyle, children, onToggled, isActive}) => {
+    const [active, setActive] = useState(false);
+    return (
+        <Tooltip title={tooltip}>
+            <ToggleButton
+                style={buttonStyle}
+                color={color}
+                selected={isActive || active}
+                onChange={() => {
+                    setActive(!active);
+                    onToggled(!active);
+                }}
+                value={'ro'}>
+                {children}
+            </ToggleButton>
+        </Tooltip>
+    );
+};
