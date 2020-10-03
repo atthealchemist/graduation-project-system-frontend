@@ -11,7 +11,7 @@ import GetAppIcon from '@material-ui/icons/GetApp';
 import MainContainer from "../../containers/MainContainer/MainContainer";
 import {TooltipedButton} from "../../single/TooltipedButton/TooltipedButton";
 import {stubTree} from "../../containers/TreeDrawer/stub";
-import {Edit} from "@material-ui/icons";
+import {Check, CheckBox, Edit} from "@material-ui/icons";
 import AddIcon from "@material-ui/icons/Add";
 import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
@@ -26,18 +26,46 @@ import axios from 'axios';
 import VideoLibraryIcon from '@material-ui/icons/VideoLibrary';
 import AudiotrackIcon from '@material-ui/icons/Audiotrack';
 import NewDocumentEditor from "../../single/DocumentEditor/NewDocumentEditor";
+import TextField from "@material-ui/core/TextField";
 
-const Title = ({children, onTitleChanged}) =>
-    <Box
-        display={'flex'}
-        alignSelf={'center'}
-        flexGrow={1}>
-        <Typography variant="h6">{children}</Typography>
-        <TooltipedButton onClick={onTitleChanged} tooltip={"Edit title"}
-                         buttonStyle={{display: 'flex', width: 25, height: 25}}>
-            <Edit style={{width: 15, height: 15}}/>
-        </TooltipedButton>
-    </Box>;
+const Title = ({content, onTitleChanged}) => {
+    const [title, setTitle] = useState(content);
+    const [editMode, setEditMode] = useState(false);
+
+    const onChangedTitleSubmit = () => {
+        if (editMode) {
+            setTitle(title);
+            setEditMode(!editMode);
+        } else {
+            setEditMode(!editMode);
+        }
+    };
+
+    return (
+        <Box
+            display={'flex'}
+            alignSelf={'center'}
+            alignItems={'center'}
+            gap={'.25em'}
+            flexGrow={1}>
+            {editMode
+                ? <TextField
+                    value={title}
+                    placeholder={"Set new title"}
+                    onChange={(event) => setTitle(event.target.value)}/>
+                : <Typography variant="h6">{title}</Typography>}
+            <TooltipedButton
+                onClick={onChangedTitleSubmit}
+                tooltip={"Edit title"}
+                buttonStyle={{display: 'flex', width: 25, height: 25}}>
+                {!editMode ? <Edit style={{width: 15, height: 15}}/> :
+                    <Check style={{color: 'green', width: 15, height: 15}}/>}
+            </TooltipedButton>
+        </Box>
+    );
+
+};
+
 
 const Author = ({name, image}) =>
     <Box
@@ -166,7 +194,7 @@ export default class DocumentPage extends React.Component {
             <Box mb={'1em'} mt={'2em'}>
                 <Toolbar variant="dense">
                     <Box display={'flex'} width={'100%'}>
-                        <Title onTitleChanged={() => this.handleTitleChanged(title)}>{document.name}</Title>
+                        <Title content={document.name} onTitleChanged={() => this.handleTitleChanged(title)} />
                         <Author image={"https://lorempixel.com/25/25/"} name={document.author.displayName}/>
                         <Divider orientation="vertical" flexItem/>
                         <Box display={'flex'} ml={1}>
