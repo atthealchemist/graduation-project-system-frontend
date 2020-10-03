@@ -12,7 +12,7 @@ export const TooltipedButton = ({tooltip, color = 'primary', component = IconBut
     );
 };
 
-export const TooltipedToggleButton = ({tooltip, color = 'inherit', buttonStyle, children, onToggled, isActive}) => {
+export const TooltipedToggleButton = ({tooltip, color = 'inherit', buttonStyle, children, performAction, isActive}) => {
     const [active, setActive] = useState(false);
     return (
         <Tooltip title={tooltip}>
@@ -22,7 +22,7 @@ export const TooltipedToggleButton = ({tooltip, color = 'inherit', buttonStyle, 
                 selected={isActive || active}
                 onChange={() => {
                     setActive(!active);
-                    onToggled(!active);
+                    performAction()
                 }}
                 value={'ro'}>
                 {children}

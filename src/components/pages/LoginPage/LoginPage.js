@@ -59,7 +59,7 @@ export default class LoginPage extends Component {
                 <CardContent>
                     <form>
                         <TextField fullWidth margin={"normal"} required label="Username or email" defaultValue="lorem@ipsum.do"/>
-                        <TextField fullWidth margin={"normal"} required type="password" label="Password" endAdornment={
+                        <TextField fullWidth margin={"normal"} required type="password" label="Password" endadornment={
                             <InputAdornment position="end">
                                 <IconButton
                                     aria-label="toggle password visibility"

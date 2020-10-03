@@ -1,4 +1,6 @@
 
+const generateRandomString = (length= 6) =>
+    Math.random().toString(20).substr(2, length);
 
 const findInTree = (tree, id) => {
     // console.log("Tree:", tree)
@@ -44,6 +46,7 @@ const stripContent = (content) => {
 };
 
 export {
+    generateRandomString,
     findInTree,
     countChildren,
     stripContent

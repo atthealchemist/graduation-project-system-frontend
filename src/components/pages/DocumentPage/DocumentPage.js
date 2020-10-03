@@ -198,32 +198,32 @@ export default class DocumentPage extends React.Component {
                         </Box>
                     </Box>
                 </Toolbar>
-                <Toolbar variant={"dense"} style={{borderTop: '1px solid #eee'}}>
-                    <Box margin={'.5em'} display={'flex'} width={'100%'}>
-                        <UploadButton
-                            id={'video-upload'}
-                            tooltip={"Upload video file"}
-                            inputAccept={'video/*'}
-                            icon={<VideoLibraryIcon color={'inherit'}/>}
-                            iconColor={'inherit'}
-                            onFileSelected={(files) => console.log('Video selected: ', files)}/>
-                        <UploadButton
-                            id={'audio-upload'}
-                            tooltip={"Upload audio file"}
-                            inputAccept={'audio/*'}
-                            icon={<AudiotrackIcon color={'inherit'}/>}
-                            iconColor={'inherit'}
-                            onFileSelected={(files) => console.log('Audio selected: ', files)}/>
+                {/*<Toolbar variant={"dense"} style={{borderTop: '1px solid #eee'}}>*/}
+                {/*    <Box margin={'.5em'} display={'flex'} width={'100%'}>*/}
+                {/*        <UploadButton*/}
+                {/*            id={'video-upload'}*/}
+                {/*            tooltip={"Upload video file"}*/}
+                {/*            inputAccept={'video/*'}*/}
+                {/*            icon={<VideoLibraryIcon color={'inherit'}/>}*/}
+                {/*            iconColor={'inherit'}*/}
+                {/*            onFileSelected={(files) => console.log('Video selected: ', files)}/>*/}
+                {/*        <UploadButton*/}
+                {/*            id={'audio-upload'}*/}
+                {/*            tooltip={"Upload audio file"}*/}
+                {/*            inputAccept={'audio/*'}*/}
+                {/*            icon={<AudiotrackIcon color={'inherit'}/>}*/}
+                {/*            iconColor={'inherit'}*/}
+                {/*            onFileSelected={(files) => console.log('Audio selected: ', files)}/>*/}
 
-                    </Box>
-                    <Box margin={'.5em'} display={'flex'}>
-                        <FormatSelect label={"Content format"} onFormatChanged={this.handleContentFormatChanged}/>
-                    </Box>
-                </Toolbar>
+                {/*    </Box>*/}
+                {/*    <Box margin={'.5em'} display={'flex'}>*/}
+                {/*        <FormatSelect label={"Content format"} onFormatChanged={this.handleContentFormatChanged}/>*/}
+                {/*    </Box>*/}
+                {/*</Toolbar>*/}
                 {/*<DocumentEditor readOnly={readOnly}*/}
                 {/*                content={content ? content : document.content}*/}
                 {/*                onContentChanged={this.handleContentChanged}/>*/}
-                <NewDocumentEditor />
+                <NewDocumentEditor readOnly={readOnly}/>
                 <Snackbar open={openSnackbar} autoHideDuration={1500}
                           onClose={() => this.setState({openSnackbar: false})}>
                     <Alert severity="success">
