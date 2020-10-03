@@ -8,7 +8,6 @@ import Tooltip from "@material-ui/core/Tooltip";
 import ShareIcon from '@material-ui/icons/Share';
 import Divider from "@material-ui/core/Divider";
 import GetAppIcon from '@material-ui/icons/GetApp';
-import DocumentEditor from "../../single/DocumentEditor/DocumentEditor";
 import MainContainer from "../../containers/MainContainer/MainContainer";
 import {TooltipedButton} from "../../single/TooltipedButton/TooltipedButton";
 import {stubTree} from "../../containers/TreeDrawer/stub";

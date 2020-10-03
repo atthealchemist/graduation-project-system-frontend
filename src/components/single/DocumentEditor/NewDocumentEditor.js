@@ -5,15 +5,15 @@ import {TooltipedButton, TooltipedToggleButton} from "../TooltipedButton/Tooltip
 import Toolbar from "@material-ui/core/Toolbar";
 import {
     Audiotrack,
-    Code,
+    Code, FormatAlignCenter, FormatAlignJustify, FormatAlignLeft, FormatAlignRight,
     FormatBold,
-    FormatItalic, FormatListBulleted, FormatListNumbered, FormatStrikethrough,
-    FormatUnderlined,
+    FormatItalic, FormatListBulleted, FormatListNumbered, FormatQuote, FormatStrikethrough,
+    FormatUnderlined, InsertLink,
     Looks3,
     Looks4,
     Looks5, Looks6,
     LooksOne,
-    LooksTwo, VideoLibrary
+    LooksTwo, TableChart, VideoLibrary
 } from "@material-ui/icons";
 import {ToggleButton} from "@material-ui/lab";
 import Paper from "@material-ui/core/Paper";
@@ -25,6 +25,8 @@ import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import axios from "axios";
 import {generateRandomString} from "../../../utils/utils";
+import {Divider} from "@material-ui/core";
+import TextField from "@material-ui/core/TextField";
 
 const LIST_TYPES = ['numbered-list', 'bulleted-list'];
 
@@ -88,7 +90,9 @@ const MarkButton = ({format, icon}) => {
             <IconComponent/>
         </TooltipedButton>
     );
-};const UploadButton = ({id, tooltip, inputAccept, icon, onClick, onFileSelected}) => <>
+};
+
+const UploadButton = ({id, tooltip, inputAccept, icon, onClick, onFileSelected}) => <>
     <input style={{display: 'none'}} accept={inputAccept} id={id} type="file"
            onChange={(event) => onFileSelected(event.target.files)}/>
     <label htmlFor={id}>
@@ -109,8 +113,8 @@ const ActionButton = ({format, icon, onFileSelected}) => {
             <label htmlFor={id}>
                 <TooltipedButton onClick={() => {
                     insertAttachment(editor, format);
-                }} tooltip={format} color={'inherit'}>
-                    <IconComponent />
+                }} tooltip={format}>
+                    <IconComponent/>
                 </TooltipedButton>
             </label>
         </>
@@ -209,14 +213,12 @@ const BlockButton = ({format, icon}) => {
     return (
         <TooltipedToggleButton
             tooltip={format}
+            color={'primary'}
             buttonStyle={{border: '1px solid transparent', borderRadius: '50%'}}
             isActive={isBlockActive(editor, format)}
             performAction={() => toggleBlock(editor, format)}
-            // onClick={event => {
-            //     event.preventDefault()
-            // }}>
-            >
-            <IconComponent style={{color: 'inherit'}}/>
+        >
+            <IconComponent />
         </TooltipedToggleButton>
     );
 };
@@ -226,7 +228,7 @@ const Element = (props) => {
     const {attributes, children, element} = props;
 
     switch (element.type) {
-        case 'block-quote':
+        case 'blockquote':
             return <blockquote {...attributes}>{children}</blockquote>
         case 'bulleted-list':
             return <ul {...attributes}>{children}</ul>
@@ -261,7 +263,7 @@ const Leaf = ({attributes, children, leaf}) => {
     }
 
     if (leaf.code) {
-        children = <code>{children}</code>
+        children = <pre><code>{children}</code></pre>
     }
 
     if (leaf.italic) {
@@ -275,34 +277,50 @@ const Leaf = ({attributes, children, leaf}) => {
     if (leaf.strikethrough) {
         children = <s>{children}</s>
     }
+    if (leaf.blockquote) {
+        children = <blockquote>{children}</blockquote>
+    }
 
     return <span {...attributes}>{children}</span>
 };
 
-const FormatSelect = ({onFormatChanged, label}) => {
+const FormatSelect = ({items, onFormatChanged, label}) => {
 
     const [format, setFormat] = useState('html');
 
     return (
-        <FormControl variant="outlined">
-            <InputLabel>{label}</InputLabel>
-            <Select
-                value={format}
-                onChange={(event) => {
-                    setFormat(event.target.value);
-                    onFormatChanged(event.target.value);
-                }}
-                label={label}>
-                <MenuItem value={'html'}>HTML (default)</MenuItem>
-                <MenuItem value={'rst'}>ReStructuredText (rst)</MenuItem>
-                <MenuItem value={'md'}>Markdown (md)</MenuItem>
-            </Select>
-        </FormControl>
+        <TextField
+            select
+            size={'small'}
+            label={label}
+            value={format}
+            onChange={(event) => {
+                setFormat(event.target.value);
+                onFormatChanged(event.target.value);
+            }}
+            variant="outlined"
+        >
+            {items.map((option, idx) => (
+                <MenuItem key={idx} value={option.value}>
+                    {option.label}
+                </MenuItem>
+            ))}
+        </TextField>
     );
 };
 
+const ToolSection = ({label, children, divider = true}) => <>
+    <Box>
+        <InputLabel style={{fontSize: 'x-small', margin: '.25em', color: '#999'}} focused={true}>{label}</InputLabel>
+        <Box style={{display: 'flex'}}>
+            {children}
+        </Box>
+    </Box>
+    {divider && <Divider style={{ margin: 'auto 2px', height: '30px', position: 'relative', top: '8px'}} orientation={'vertical'} flexItem/>}
+</>;
 
-const NewDocumentEditor = ({ readOnly }) => {
+
+const NewDocumentEditor = ({readOnly}) => {
     const [value, setValue] = useState(initialValue);
     const [format, setFormat] = useState('html');
 
@@ -324,7 +342,9 @@ const NewDocumentEditor = ({ readOnly }) => {
         })
             .catch(e => console.error(e))
             .then(res => {
-                setValue(res.data.result);
+                if (res) {
+                    setValue(res.data.result);
+                }
             });
         console.log("Updating new formatted content: ", content);
         setFormat(newFormat);
@@ -333,11 +353,11 @@ const NewDocumentEditor = ({ readOnly }) => {
     const onSubmit = (event) => {
         // do some awaiting stuff back to the server
 
-        const point = { path: [0, 0], offset: 0 };
-        editor.selection = { anchor: point, focus: point };
+        const point = {path: [0, 0], offset: 0};
+        editor.selection = {anchor: point, focus: point};
 
         // For good measure, you can reset the history as well
-        editor.history = { redos: [], undos: [] };
+        editor.history = {redos: [], undos: []};
 
         // Reset things back to their original (empty) state
         setValue(initialValue);
@@ -358,30 +378,55 @@ const NewDocumentEditor = ({ readOnly }) => {
     };
 
     return (
-        <Paper style={{padding: '2em 1em', height: '85vh'}}>
+        <Paper style={{padding: '1em 2em', textAlign: 'initial', height: '85vh'}}>
             <Slate editor={editor} value={value} onChange={(v) => setValue(v)}>
-                <Toolbar>
-                    <MarkButton format="bold" icon={FormatBold}/>
-                    <MarkButton format="italic" icon={FormatItalic}/>
-                    <MarkButton format="underline" icon={FormatUnderlined}/>
-                    <MarkButton format="strikethrough" icon={FormatStrikethrough}/>
-                    <MarkButton format="code" icon={Code}/>
-                    <BlockButton format="heading-one" icon={LooksOne}/>
-                    <BlockButton format="heading-two" icon={LooksTwo}/>
-                    <BlockButton format="heading-three" icon={Looks3}/>
-                    <BlockButton format="heading-four" icon={Looks4}/>
-                    <BlockButton format="heading-five" icon={Looks5}/>
-                    <BlockButton format="heading-six" icon={Looks6}/>
-                    <BlockButton format="numbered-list" icon={FormatListNumbered}/>
-                    <BlockButton format="bulleted-list" icon={FormatListBulleted}/>
-                    <ActionButton format="video" icon={VideoLibrary} onFileSelected={onVideoSelected}/>
-                    <ActionButton format="audio" icon={Audiotrack} onFileSelected={onAudioSelected}/>
-                    <Box margin={'.5em'} display={'flex'}>
-                        <FormatSelect label={"Content format"} onFormatChanged={handleContentFormatChanged}/>
-                    </Box>
+                <Toolbar style={{padding: '.5em', flexWrap: 'wrap'}}>
+                    <ToolSection label={"Formatting"}>
+                        <MarkButton format="bold" icon={FormatBold}/>
+                        <MarkButton format="italic" icon={FormatItalic}/>
+                        <MarkButton format="underline" icon={FormatUnderlined}/>
+                        <MarkButton format="strikethrough" icon={FormatStrikethrough}/>
+                        <MarkButton format="code" icon={Code}/>
+                        <MarkButton format="block-quote" icon={FormatQuote}/>
+                    </ToolSection>
+                    <ToolSection label={"Alignment"}>
+                        <MarkButton format="align-left" icon={FormatAlignLeft}/>
+                        <MarkButton format="align-center" icon={FormatAlignCenter}/>
+                        <MarkButton format="align-right" icon={FormatAlignRight}/>
+                        <MarkButton format="align-justify" icon={FormatAlignJustify}/>
+                    </ToolSection>
+                    <ToolSection label={"Heading"}>
+                        <BlockButton format="heading-one" icon={LooksOne}/>
+                        <BlockButton format="heading-two" icon={LooksTwo}/>
+                        <BlockButton format="heading-three" icon={Looks3}/>
+                        <BlockButton format="heading-four" icon={Looks4}/>
+                        <BlockButton format="heading-five" icon={Looks5}/>
+                        <BlockButton format="heading-six" icon={Looks6}/>
+                    </ToolSection>
+                    <ToolSection label={"Lists"}>
+                        <BlockButton format="numbered-list" icon={FormatListNumbered}/>
+                        <BlockButton format="bulleted-list" icon={FormatListBulleted}/>
+                    </ToolSection>
+                    <ToolSection label={"Attachments"} divider={false}>
+                        <ActionButton format="video" icon={VideoLibrary} onFileSelected={onVideoSelected}/>
+                        <ActionButton format="audio" icon={Audiotrack} onFileSelected={onAudioSelected}/>
+                        <ActionButton format="link" icon={InsertLink} onFileSelected={onAudioSelected}/>
+                        <ActionButton format="table" icon={TableChart} onFileSelected={onAudioSelected}/>
+                    </ToolSection>
+                    <ToolSection label={"Content format"} divider={false}>
+                        <Box margin={'.5em'} display={'flex'}>
+                            <FormatSelect
+                                items={[
+                                    {value: 'html', label: 'HTML (default)'},
+                                    {value: 'md', label: 'Markdown'},
+                                    {value: 'rst', label: 'reStructuredText'},
+                                ]}
+                                onFormatChanged={handleContentFormatChanged}/>
+                        </Box>
+                    </ToolSection>
                 </Toolbar>
                 <Editable
-                    style={{height: '85vh'}}
+                    style={{height: '85vh', padding: '1em', border: '1px solid #eee'}}
                     renderElement={renderElement}
                     renderLeaf={renderLeaf}
                     placeholder="Enter some text"
