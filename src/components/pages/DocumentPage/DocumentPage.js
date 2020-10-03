@@ -34,11 +34,10 @@ const Title = ({content, onTitleChanged}) => {
 
     const onChangedTitleSubmit = () => {
         if (editMode) {
+            if(!title) return;
             setTitle(title);
-            setEditMode(!editMode);
-        } else {
-            setEditMode(!editMode);
         }
+        setEditMode(!editMode);
     };
 
     return (
