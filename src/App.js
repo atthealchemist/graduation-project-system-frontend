@@ -11,6 +11,8 @@ import {BrowserRouter as Router, Redirect, Switch, Route} from 'react-router-dom
 
 import {stubTree} from "./components/containers/TreeDrawer/stub";
 import RegisterPage from "./components/pages/RegisterPage/RegisterPage";
+import AdminPage from "./components/pages/AdminPage/AdminPage";
+import AccountPage from "./components/pages/AccountPage/AccountPage";
 
 class App extends React.Component {
 
@@ -50,6 +52,8 @@ class App extends React.Component {
                             {loggedIn ? <LoginPage onAuthChanged={this.handleAuthChanged}/> : <Redirect to={'/login'}/>}
                         </Route>
                         <Route path='/register' component={RegisterPage}/>
+                        <Route path='/admin' component={AdminPage}/>
+                        <Route path='/account' component={AccountPage}/>
                         <Route path='/documents/:id' component={DocumentPage}/>
                         <Redirect to={'/login'}/>
                     </Switch>
