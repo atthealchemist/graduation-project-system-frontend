@@ -1,61 +1,51 @@
-import React from "react";
-import {Box, Container, Divider, Grid, Typography} from "@material-ui/core";
+import React, {useEffect, useState} from "react";
+import {Container, Grid} from "@material-ui/core";
 
 import {stubTree} from '../../containers/TreeDrawer/stub';
-import {Link} from "react-router-dom";
+import {useParams} from "react-router-dom";
 import {DocumentItem} from "../../items/DocumentItem/DocumentItem";
-import Fab from "@material-ui/core/Fab";
-import AddIcon from "@material-ui/icons/Add";
-import Tooltip from "@material-ui/core/Tooltip";
-import {countChildren} from "../../../utils/utils";
+import {countChildren, findInTree} from "../../../utils/utils";
 import Alert from "@material-ui/lab/Alert";
 import Snackbar from "@material-ui/core/Snackbar";
+import {DashboardBreadcrumbs} from "./DashboardBreadcrumbs";
+import {DashboardHeader} from "./DashboardHeader";
+import {DashboardFooter} from "./DashboardFooter";
 
 
-const DashboardHeader = ({username, docsCount}) => <Box mb={5}>
-    <Typography style={{fontWeight: 600}} variant={'h2'} gutterBottom>{username}'s space</Typography>
-    <Typography variant={'h4'} gutterBottom>{docsCount} documents</Typography>
-    <Divider/>
-</Box>;
+const DashboardPage = () => {
 
-const DashboardFooter = () => <Link to={'/documents/new'}>
+    const [documents, setDocuments] = useState([]);
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [route, setRoute] = useState([{path: '/', name: 'Dashboard'}]);
+    const routeParams = useParams();
 
-    <Tooltip title={"Add new document"}>
-        <Fab style={{
-            position: 'absolute',
-            bottom: 0,
-            right: 0,
-            margin: '4em',
-            width: 75,
-            height: 75
-        }}
-             color="primary" aria-label="add">
-            <AddIcon style={{width: 50, height: 50}}/>
-        </Fab>
-    </Tooltip>
-</Link>;
 
-export default class DashboardPage extends React.Component {
-
-    state = {
-        documents: [],
-        openSnackbar: false
+    const componentDidMount = () => {
+        fetchDocs();
+        // setRoute([{path: '/', name: 'Dashboard'}]);
     };
 
-    componentDidMount() {
-        this.fetchDocs();
-    }
+    useEffect(componentDidMount);
 
-    renderNode = (node, idx) => {
-        const docItem = <DocumentItem
+    const handleLinkNavigated = (node) => {
+        const newRoute = [...route, {path: `/folders/${node.id}`, name: node.name}];
+        setRoute(newRoute);
+
+        setDocuments(node.children);
+    };
+
+    const renderNode = (node, idx) => {
+        const folderItem = <DocumentItem
             id={node.id}
             width={260}
             title={node.name}
+            linkTo={`/folders/${node.id}`}
+            linkClicked={() => handleLinkNavigated(node)}
             description={node.createdAt}
             content={node.content}
             author={node.author}
-            onDocumentRemove={this.handleDocumentRemove}
-            onDocumentShare={this.handleDocumentShare}
+            onDocumentRemove={handleDocumentRemove}
+            onDocumentShare={handleDocumentShare}
         />;
 
         const linkedDocItem = <DocumentItem
@@ -66,51 +56,67 @@ export default class DashboardPage extends React.Component {
             description={node.createdAt}
             content={node.content}
             author={node.author}
-            onDocumentRemove={this.handleDocumentRemove}
-            onDocumentShare={this.handleDocumentShare}
+            onDocumentRemove={handleDocumentRemove}
+            onDocumentShare={handleDocumentShare}
         />;
 
         return <Grid key={idx} item xs>
             <Grid item xs>
-                {node.content ? linkedDocItem : docItem}
+                {node.content ? linkedDocItem : folderItem}
             </Grid>
-            {node.children.map((child, idx) => child.content ?
-                <Grid key={idx} item xs>{this.renderNode(child, idx)}</Grid>
-                : child.children.map((n, i) => <Grid key={i} item xs>{this.renderNode(n, i)}</Grid>))}
+            {/*{node.children.map((child, idx) => child.content ?*/}
+            {/*    <Grid key={idx} item xs>*/}
+            {/*        {renderNode(child, idx)}*/}
+            {/*    </Grid>*/}
+            {/*    : child.children.map((n, i) => <Grid key={i} item xs>*/}
+            {/*        {renderNode(n, i)}*/}
+            {/*    </Grid>))}*/}
         </Grid>;
     };
 
-    fetchDocs = () => {
-        this.setState({documents: stubTree});
+    const fetchDocs = () => {
+        const id = routeParams.id;
+        if(id && id.length > 1) {
+            console.log('id', id);
+            const item = findInTree(stubTree, id);
+            console.log('item', item);
+            if(item.children){
+                setDocuments(item.children);
+            }
+        } else {
+            setDocuments(stubTree);
+        }
     };
 
-    handleDocumentRemove = (docId) => {
+    const handleDocumentRemove = (docId) => {
         console.log("Removed doc: ", docId);
     };
 
-    handleDocumentShare = (docId) => {
+    const handleDocumentShare = (docId) => {
         console.log("Shared doc: ", docId);
         const docUrl = `${window.location.protocol}//${window.location.hostname}:${window.location.port}/documents/${docId}`;
         navigator.clipboard.writeText(docUrl).then(r => console.log("Copied to clipboard", docUrl));
-        this.setState({openSnackbar: true})
+        setOpenSnackbar(true);
     };
 
-    render() {
-        const {documents, openSnackbar} = this.state;
-        const docsCount = countChildren(documents);
-        return <Container style={{marginTop: '5em'}}>
-            <DashboardHeader docsCount={docsCount} username={'Hanyuu'}/>
-            <Grid container spacing={3}>
-                {documents.map((doc, idx) => this.renderNode(doc, idx))}
-            </Grid>
-            <Snackbar open={openSnackbar} autoHideDuration={1500}
-                      onClose={() => this.setState({openSnackbar: false})}>
-                <Alert severity="success">
-                    Copied to clipboard!
-                </Alert>
-            </Snackbar>
-            <DashboardFooter/>
+    const docsCount = countChildren(documents);
 
-        </Container>;
-    }
+    return (<Container style={{marginTop: '5em'}}>
+        <DashboardHeader docsCount={docsCount} username={'Hanyuu'}/>
+        <DashboardBreadcrumbs routes={route}/>
+        <Grid container spacing={3}>
+            {documents.map((doc, idx) => renderNode(doc, idx))}
+        </Grid>
+        <Snackbar open={openSnackbar} autoHideDuration={1500}
+                  onClose={() => setOpenSnackbar(false)}>
+            <Alert severity="success">
+                Copied to clipboard!
+            </Alert>
+        </Snackbar>
+        <DashboardFooter/>
+
+    </Container>);
+
 }
+
+export default DashboardPage;

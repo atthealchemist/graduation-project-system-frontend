@@ -1,280 +1,144 @@
 import React, {useState} from "react";
-import {Avatar, ButtonGroup, Toolbar} from "@material-ui/core";
-import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
-import ToggleButton from "@material-ui/lab/ToggleButton";
-import ChromeReaderModeIcon from '@material-ui/icons/ChromeReaderMode';
 import Tooltip from "@material-ui/core/Tooltip";
-import ShareIcon from '@material-ui/icons/Share';
-import Divider from "@material-ui/core/Divider";
-import GetAppIcon from '@material-ui/icons/GetApp';
 import MainContainer from "../../containers/MainContainer/MainContainer";
-import {TooltipedButton} from "../../single/TooltipedButton/TooltipedButton";
 import {stubTree} from "../../containers/TreeDrawer/stub";
-import {Check, CheckBox, Edit} from "@material-ui/icons";
 import AddIcon from "@material-ui/icons/Add";
-import Snackbar from "@material-ui/core/Snackbar";
-import Alert from "@material-ui/lab/Alert";
 import Fab from "@material-ui/core/Fab";
-import {Link} from "react-router-dom";
+import {Link, useParams, useRouteMatch} from "react-router-dom";
 import {findInTree} from "../../../utils/utils";
-import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
-import axios from 'axios';
-import VideoLibraryIcon from '@material-ui/icons/VideoLibrary';
-import AudiotrackIcon from '@material-ui/icons/Audiotrack';
-import NewDocumentEditor from "../../single/DocumentEditor/NewDocumentEditor";
-import TextField from "@material-ui/core/TextField";
+import DocumentEditor from "../../single/DocumentEditor/DocumentEditor";
+import PublishDialog from "../../single/PublishDialog/PublishDialog";
+import DocumentChangeDrawer from "../../containers/DocumentChangeDrawer/DocumentChangeDrawer";
+import {DocumentToolbar} from "./DocumentToolbar";
+import {Snack} from "./Snack";
+import {getDocumentById} from "../../single/DocumentEditor/utils";
 
-const Title = ({content, onTitleChanged}) => {
-    const [title, setTitle] = useState(content);
-    const [editMode, setEditMode] = useState(false);
+const DocumentPage = () => {
+    const {id: documentId} = useParams();
+    const {isExact} = useRouteMatch();
 
-    const onChangedTitleSubmit = () => {
-        if (editMode) {
-            if(!title) return;
-            setTitle(title);
-        }
-        setEditMode(!editMode);
+    const [readOnly, setReadOnly] = useState(false);
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [snackbarType, setSnackbarType] = useState('success');
+    const [published, setPublished] = useState(false);
+    const [historyOpened, setHistoryOpened] = useState(false);
+    const [snackbarText, setSnackbarText] = useState('');
+    const [document, setDocument] = useState(null);
+
+
+
+    const handleHistoryOpened = () => {
+        setHistoryOpened(!historyOpened);
+        console.log("history opened", historyOpened)
     };
 
-    return (
-        <Box
-            display={'flex'}
-            alignSelf={'center'}
-            alignItems={'center'}
-            gap={'.25em'}
-            flexGrow={1}>
-            {editMode
-                ? <TextField
-                    value={title}
-                    placeholder={"Set new title"}
-                    onChange={(event) => setTitle(event.target.value)}/>
-                : <Typography variant="h6">{title}</Typography>}
-            <TooltipedButton
-                onClick={onChangedTitleSubmit}
-                tooltip={"Edit title"}
-                buttonStyle={{display: 'flex', width: 25, height: 25}}>
-                {!editMode ? <Edit style={{width: 15, height: 15}}/> :
-                    <Check style={{color: 'green', width: 15, height: 15}}/>}
-            </TooltipedButton>
-        </Box>
-    );
 
-};
-
-
-const Author = ({name, image}) =>
-    <Box
-        display={'flex'}
-        flexDirection={'row'}
-        alignItems={'center'}
-        justifyContent={'center'}
-    >
-        <Avatar
-            style={{width: 25, height: 25}}
-            alt="Remy Sharp"
-            src={image}/>
-        <Typography style={{margin: '0 1em', fontSize: 'small'}}>{name}</Typography>
-    </Box>;
-
-
-const FormatSelect = ({onFormatChanged, label}) => {
-
-    const [format, setFormat] = useState('html');
-
-    return (
-        <FormControl variant="outlined">
-            <InputLabel>{label}</InputLabel>
-            <Select
-                value={format}
-                onChange={(event) => {
-                    setFormat(event.target.value);
-                    onFormatChanged(event.target.value);
-                }}
-                label={label}>
-                <MenuItem value={'html'}>HTML (default)</MenuItem>
-                <MenuItem value={'rst'}>ReStructuredText (rst)</MenuItem>
-                <MenuItem value={'md'}>Markdown (md)</MenuItem>
-            </Select>
-        </FormControl>
-    );
-};
-
-const UploadButton = ({id, tooltip, inputAccept, icon, onClick, onFileSelected}) => <>
-    <input style={{display: 'none'}} accept={inputAccept} id={id} type="file"
-           onChange={(event) => onFileSelected(event.target.files)}/>
-    <label htmlFor={id}>
-        <TooltipedButton tooltip={tooltip} color={'inherit'}>
-            {icon}
-        </TooltipedButton>
-    </label>
-</>;
-
-
-export default class DocumentPage extends React.Component {
-
-    state = {
-        readOnly: false,
-        openSnackbar: false,
-        content: '',
-        contentFormat: 'html'
-    };
-
-    content = '';
-
-    handleSnackbarClosed = (event, reason) => {
-        if (reason) {
-            return;
-        }
-
-        this.setState({openSnackbar: false});
-    };
-
-    handleReadOnlyMode = () => {
-        const {readOnly} = this.state;
-        this.setState({readOnly: !readOnly})
-        console.log("Readonly: " + this.state.readOnly)
+    const handleReadOnlyMode = () => {
+        setReadOnly(!readOnly);
+        console.log("Readonly: ", readOnly);
     }
 
-    handleTitleChanged = (oldTitle) => {
-        this.setState({title: 'aaa'})
-    };
-
-    handleContentChanged = (content) => {
+    const handleContentChanged = (content) => {
         setTimeout(() => {
             console.log("Content changed!", content);
             if (content) {
-                this.setState({openSnackbar: true, content: content});
+                // setContent(content);
+                showSnackbar("Saved document!");
             }
         }, 3000);
     };
 
-    handleContentFormatChanged = (format) => {
-        const {content, contentFormat} = this.state;
-
-        console.log('src', content);
-        const self = this;
-        axios.post('http://localhost:8000/converter/convert', {
-            sourceFormat: contentFormat,
-            targetFormat: format,
-            content: content
-        }).then(res => {
-            self.content = res.data.result;
-        });
-        console.log("Updating new formatted content: ", this.content);
+    const handleDocumentPublish = () => {
+        setPublished(true);
     };
 
-    render() {
+    const handleDocumentPublished = () => {
+        setPublished(!published);
+        showSnackbar("Published document!")
+    };
 
-        const {match} = this.props;
-        const {title, readOnly, openSnackbar, content, contentFormat} = this.state;
-        console.log("Passing props", match);
+    const handleTitleChanged = (title) => {
+        // Here we're should update title on backend
+    };
 
-        let document = findInTree(stubTree, match.params.id);
-        console.log('Got doc: ' + document);
-        if (match.params.id === 'new') {
-            document = {
-                id: '',
-                name: 'New document',
-                author: {
-                    displayName: "Hanyuu",
-                    avatar: "http://lorempixel.com/200/200/"
-                },
-                createdAt: `${new Date()}`,
-                content: ''
-            };
-        }
-        // this.updateContent(document.content);
+    const handleHistoryChangeHovered = (change) => {
+        console.log('change hovered', change.documentUuid);
+    };
 
-        const component = <MainContainer>
-            <Box mb={'1em'} mt={'2em'}>
-                <Toolbar variant="dense">
-                    <Box display={'flex'} width={'100%'}>
-                        <Title content={document.name} onTitleChanged={() => this.handleTitleChanged(title)} />
-                        <Author image={"https://lorempixel.com/25/25/"} name={document.author.displayName}/>
-                        <Divider orientation="vertical" flexItem/>
-                        <Box display={'flex'} ml={1}>
-                            <Tooltip title={`Read only mode ${readOnly ? 'enabled' : 'disabled'}`}>
-                                <ToggleButton
-                                    style={{
-                                        border: '1px solid transparent',
-                                        borderRadius: '50%',
-                                        padding: '.75em'
-                                    }}
-                                    color={'primary'}
-                                    selected={readOnly}
-                                    onChange={this.handleReadOnlyMode}
-                                    value={'ro'}>
-                                    <ChromeReaderModeIcon/>
-                                </ToggleButton>
-                            </Tooltip>
-                            <TooltipedButton
-                                buttonStyle={{padding: '.25em .5em'}}
-                                tooltip={"Share"}>
-                                <ShareIcon/>
-                            </TooltipedButton>
-                            <TooltipedButton
-                                buttonStyle={{padding: '.25em .5em'}}
-                                tooltip={"Download"}>
-                                <GetAppIcon/>
-                            </TooltipedButton>
-                        </Box>
-                    </Box>
-                </Toolbar>
-                {/*<Toolbar variant={"dense"} style={{borderTop: '1px solid #eee'}}>*/}
-                {/*    <Box margin={'.5em'} display={'flex'} width={'100%'}>*/}
-                {/*        <UploadButton*/}
-                {/*            id={'video-upload'}*/}
-                {/*            tooltip={"Upload video file"}*/}
-                {/*            inputAccept={'video/*'}*/}
-                {/*            icon={<VideoLibraryIcon color={'inherit'}/>}*/}
-                {/*            iconColor={'inherit'}*/}
-                {/*            onFileSelected={(files) => console.log('Video selected: ', files)}/>*/}
-                {/*        <UploadButton*/}
-                {/*            id={'audio-upload'}*/}
-                {/*            tooltip={"Upload audio file"}*/}
-                {/*            inputAccept={'audio/*'}*/}
-                {/*            icon={<AudiotrackIcon color={'inherit'}/>}*/}
-                {/*            iconColor={'inherit'}*/}
-                {/*            onFileSelected={(files) => console.log('Audio selected: ', files)}/>*/}
+    const setupDocument = (doc) => {
+        setDocument(doc);
+    };
 
-                {/*    </Box>*/}
-                {/*    <Box margin={'.5em'} display={'flex'}>*/}
-                {/*        <FormatSelect label={"Content format"} onFormatChanged={this.handleContentFormatChanged}/>*/}
-                {/*    </Box>*/}
-                {/*</Toolbar>*/}
-                {/*<DocumentEditor readOnly={readOnly}*/}
-                {/*                content={content ? content : document.content}*/}
-                {/*                onContentChanged={this.handleContentChanged}/>*/}
-                <NewDocumentEditor readOnly={readOnly}/>
-                <Snackbar open={openSnackbar} autoHideDuration={1500}
-                          onClose={() => this.setState({openSnackbar: false})}>
-                    <Alert severity="success">
-                        Saved document!
-                    </Alert>
-                </Snackbar>
-                <Link to={'/documents/new'}>
-                    <Tooltip title={"Add another new document"}>
-                        <Fab style={{
-                            position: 'absolute',
-                            bottom: 0,
-                            right: 0,
-                            margin: '4em',
-                            width: 75,
-                            height: 75
-                        }}
-                             color="primary" aria-label="add">
-                            <AddIcon style={{width: 50, height: 50}}/>
-                        </Fab>
-                    </Tooltip>
-                </Link>
-            </Box>
-        </MainContainer>;
+    const showSnackbar = (text, type = 'success') => {
+        setOpenSnackbar(true);
+        setSnackbarText(text);
+        setSnackbarType(type);
+    };
 
+    let stubChanges = [
+        {
+            documentUuid: "1",
+            timestamp: new Date().getMilliseconds(),
+            contentBefore: "",
+            contentAfter: ""
+        },
+        {
+            documentUuid: "2",
+            timestamp: new Date().getMilliseconds(),
+            contentBefore: "",
+            contentAfter: ""
+        },
+    ];
 
-        return (<>{match.isExact && component}</>);
+    if(!document){
+        setupDocument(getDocumentById(stubTree, documentId));
     }
+
+    const component = <MainContainer>
+        <Box mb={'1em'} mt={'2em'}>
+            <DocumentToolbar
+                document={document}
+                readOnly={readOnly}
+                onHistoryOpened={handleHistoryOpened}
+                onTitleChanged={handleTitleChanged}
+                onChange={handleReadOnlyMode}
+                onDocumentPublish={handleDocumentPublish}/>
+            <DocumentChangeDrawer
+                open={historyOpened}
+                changes={stubChanges}
+                onChangeHovered={handleHistoryChangeHovered}
+            />
+            <DocumentEditor
+                document={document}
+                readOnly={readOnly}
+                onContentChanged={handleContentChanged}
+            />
+            <Snack open={openSnackbar} type={snackbarType} text={snackbarText}/>
+            <Link to={'/documents/new'}>
+                <Tooltip title={"Add another new document"}>
+                    <Fab style={{
+                        position: 'absolute',
+                        bottom: 0,
+                        right: 0,
+                        margin: '4em',
+                        width: 75,
+                        height: 75
+                    }}
+                         color="primary" aria-label="add">
+                        <AddIcon style={{width: 50, height: 50}}/>
+                    </Fab>
+                </Tooltip>
+            </Link>
+        </Box>
+        {published &&
+        <PublishDialog show={published} document={document} onDocumentPublished={handleDocumentPublished}/>}
+
+    </MainContainer>;
+
+
+    return <>
+        {isExact && component}
+    </>;
 }
+export default DocumentPage;

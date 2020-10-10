@@ -2,32 +2,37 @@
 const generateRandomString = (length= 6) =>
     Math.random().toString(20).substr(2, length);
 
+const nodeIsDocument = (node) => node.content && node.content.length > 0;
+
+const nodeIsFolder = (node) => node.children && node.children.length > 0;
+
 const findInTree = (tree, id) => {
-    // console.log("Tree:", tree)
-    let res = {};
+    let searchResult = {};
+
     tree.map(node => {
-        if (node.content && node.content.length > 0) {
+        if (nodeIsDocument(node)) {
             if(node.id === id)
-                res = node;
+                searchResult = node;
         }
-        if (node.children && node.children.length > 0) {
+        if (nodeIsFolder(node)) {
             let child = findInTree(node.children, id);
             if(child.id === id)
-                res = child;
+                searchResult = child;
         }
-        return res;
+        return searchResult;
     });
-    console.log("Result: ", res);
-    return res;
+    console.log("findInTree result: ", searchResult);
+    return searchResult;
 };
 
 const countChildren = (children) => {
     let count = 0;
+
     children.map(child => {
-        if(child.content && child.content.length > 0){
+        if(nodeIsDocument(child)){
             count++;
         }
-        if(child.children && child.children.length > 0){
+        if(nodeIsFolder(child)){
             count += countChildren(child.children);
         }
         return count;

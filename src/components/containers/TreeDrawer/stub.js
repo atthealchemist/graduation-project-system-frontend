@@ -7,20 +7,15 @@ export const stubTree = [
             avatar: "http://lorempixel.com/200/200/"
         },
         createdAt: "2020-09-22 13:45:50.004T",
-        content: "A <i>quick</i> brown <b>fox</b> jumps over the <s>lazy</s> dog. <br> Take a look: <video width='auto' height='100' controls>" +
-            "  <source src=\"https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/1080/Big_Buck_Bunny_1080_10s_1MB.mp4\" type=\"video/mp4\">\n" +
-            "  Your browser doesn't support HTML5 video tag.\n" +
-            "</video><br>Listen it: <audio\n" +
-            "        controls\n" +
-            "        src=\"//interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3\">\n" +
-            "            Your browser does not support the\n" +
-            "            <code>audio</code> element.\n" +
-            "    </audio>" +
-            "",
+        content: "A <i>quick</i> brown <b>fox</b> jumps over the <s>lazy</s> dog. <br> Take a look: <video width='auto' height='100' controls> \
+            <source src=\"https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/1080/Big_Buck_Bunny_1080_10s_1MB.mp4\" type=\"video/mp4\"> \
+            </video><br>Listen it: <audio controls src=\"//interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3\"> \
+            </audio> \
+            ",
         children: []
     },
     {
-        id: '2',
+        id: 'folder-2',
         name: 'Folder 1',
         createdAt: "2020-09-22 13:45:50.004T",
         children: [
@@ -38,7 +33,7 @@ export const stubTree = [
         ]
     },
     {
-        id: '4',
+        id: 'folder-4',
         name: 'Folder 2',
         createdAt: "2020-09-22 13:45:50.004T",
         children: [
@@ -65,8 +60,8 @@ export const stubTree = [
                 children: []
             },
             {
-                id: '7',
-                name: 'Inner test stuff',
+                id: 'folder-7',
+                name: 'Inner test stuff folder',
                 createdAt: "2020-09-22 13:45:50.004T",
                 children: [
                     {

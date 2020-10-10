@@ -2,5 +2,8 @@
   "server": {
     "url": "localhost",
     "port": 8000
+  },
+  "oauth": {
+    "googleClientId": "156434063975-bifafqgpdiga1j30sotlo30m6rm0poad.apps.googleusercontent.com"
   }
 }

@@ -12,7 +12,6 @@ import {BrowserRouter as Router, Redirect, Switch, Route} from 'react-router-dom
 
 // import DocumentApiInterface from './api/document';
 
-import {stubTree} from "./components/containers/TreeDrawer/stub";
 import RegisterPage from "./components/pages/RegisterPage/RegisterPage";
 import AdminPage from "./components/pages/AdminPage/AdminPage";
 import AccountPage from "./components/pages/AccountPage/AccountPage";
@@ -75,7 +74,7 @@ const App = () => {
                             <LoginPage onAuthChanged={handleAuthChanged}/>}
                     </Route>
                     <Route exact path='/dashboard'>
-                        {loggedIn ? <DashboardPage/> : <Redirect to='/login'/>}
+                        {loggedIn ? <DashboardPage /> : <Redirect to='/login'/>}
                     </Route>
                     <Route exact path='/login'>
                         {!loggedIn ? <LoginPage onAuthChanged={handleAuthChanged}/> :
@@ -88,6 +87,7 @@ const App = () => {
                     <Route path='/admin' component={AdminPage}/>
                     <Route path='/account' component={AccountPage}/>
                     <Route path='/documents/:id' component={DocumentPage}/>
+                    <Route path='/folders/:id' component={DashboardPage} />
                     <Redirect to={'/login'}/>
                 </Switch>
             </div>

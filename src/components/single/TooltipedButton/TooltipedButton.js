@@ -5,6 +5,7 @@ import {ToggleButton} from "@material-ui/lab";
 
 export const TooltipedButton = ({tooltip, color = 'primary', component = IconButton, buttonStyle, children, onClick}) => {
     const ButtonComponent = component;
+
     return (
         <Tooltip title={tooltip}>
             <ButtonComponent style={buttonStyle} color={color} onClick={onClick}>{children}</ButtonComponent>
