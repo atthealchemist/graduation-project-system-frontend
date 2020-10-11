@@ -16,6 +16,9 @@ const serialize = node => {
             return `<p>${children}</p>`
         case 'link':
             return `<a href="${escapeHtml(node.url)}">${children}</a>`
+        case 'img':
+        case 'image':
+            return `<img width="auto" height="100%"  alt="" src="${node.url}" />`
         case 'audio':
             return `<div><audio controls src="${node.src}">Your browser does not support the <code>audio</code> element</audio>${children}</div>`;
         case 'video':

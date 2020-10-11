@@ -30,6 +30,9 @@ export const VideoElement = ({attributes, children, element}) => {
         Transforms.setNodes(editor, {url: value}, {at: path});
     };
 
+    const name = extractNameFromUrl(element.src);
+    const size = getFileSize(element.src);
+
     return (
         <AttachBox style={{width: 'fit-content'}}
              display={'flex'}
@@ -37,8 +40,8 @@ export const VideoElement = ({attributes, children, element}) => {
              alignItems={'center'}
              margin={'1em'}>
             <Box flexFlow={'row'} alignItems={'center'}>
-                <Typography variant={"subtitle1"}>{extractNameFromUrl(element.src)}</Typography>
-                <Typography variant={"subtitle2"}>{getFileSize(element.src)}</Typography>
+                <Typography variant={"subtitle1"}>{name}</Typography>
+                {size > 1 && <Typography variant={"subtitle2"}>{size}</Typography>}
             </Box>
             <Box>
                 <video height={250} controls>

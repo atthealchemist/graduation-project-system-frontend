@@ -26,6 +26,12 @@ const deserialize = element => {
         case 'CODE':
             const codeChildren = children.map(c => c = {text: c, code: true});
             return jsx('element', {type: 'paragraph'}, codeChildren);
+        case 'IMAGE':
+        case 'IMG':
+            console.log("Image", element);
+            const imageSrc = element.getAttribute('src');
+            const imageChildren = [{text: ''}];
+            return jsx('element', {type: 'image', src: imageSrc}, imageChildren)
         case 'VIDEO':
             const videoSrc = element.children[0].src;
             return jsx('element', {type: 'video', src: videoSrc}, children)

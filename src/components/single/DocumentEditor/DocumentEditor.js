@@ -38,7 +38,7 @@ import {ToolSection} from "./ToolSection";
 import {AudioElement} from "./components/AudioElement";
 import {VideoElement} from "./components/VideoElement";
 import {convertFromHtmlToSlate, convertFromSlateToHtml} from "./utils";
-
+import {ImageElement} from "./components/ImageElement";
 
 const withHtml = editor => {
     const { insertData, isInline, isVoid } = editor
@@ -91,6 +91,9 @@ const Element = (props) => {
             return <li {...attributes}>{children}</li>
         case 'numbered-list':
             return <ol {...attributes}>{children}</ol>
+        case 'img':
+        case 'image':
+            return <ImageElement {...props} />
         case 'video':
             return <VideoElement {...props} />
         case 'audio':
@@ -245,7 +248,7 @@ const DocumentEditor = ({document, documentFormat = 'html', readOnly, onContentC
                     </ToolSection>
                 </Toolbar>
                 <Editable
-                    style={{height: '85vh', padding: '1em', border: '1px solid #eee'}}
+                    style={{height: '85vh', padding: '1em', border: '1px solid #eee', overflowY: 'auto'}}
                     renderElement={renderElement}
                     renderLeaf={renderLeaf}
                     placeholder="Enter some text"

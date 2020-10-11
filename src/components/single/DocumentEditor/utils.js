@@ -2,10 +2,10 @@ import {deserialize} from "./deserializers/html";
 import {serialize} from "./serializers/html";
 import {findInTree} from "../../../utils/utils";
 
-const formatBytes = (a, b = 2) => {
-    if (0 === a) return "0 Bytes";
-    const c = 0 > b ? 0 : b, d = Math.floor(Math.log(a) / Math.log(1024));
-    return parseFloat((a / Math.pow(1024, d)).toFixed(c)) + " " + ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"][d]
+const formatBytes = (value, fraction = 2) => {
+    if (0 === value) return 0;
+    const c = 0 > fraction ? 0 : fraction, d = Math.floor(Math.log(value) / Math.log(1024));
+    return parseFloat((value / Math.pow(1024, d)).toFixed(c)) + " " + ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"][d]
 };
 
 

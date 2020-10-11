@@ -7,7 +7,9 @@ export const stubTree = [
             avatar: "http://lorempixel.com/200/200/"
         },
         createdAt: "2020-09-22 13:45:50.004T",
-        content: "A <i>quick</i> brown <b>fox</b> jumps over the <s>lazy</s> dog. <br> Take a look: <video width='auto' height='100' controls> \
+        content: "A <i>quick</i> brown <b>fox</b> jumps over the <s>lazy</s> dog. \
+        <img src=\"https://lorempixel.com/200/200\" >\
+        <br> Take a look: <video width='auto' height='100' controls> \
             <source src=\"https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/1080/Big_Buck_Bunny_1080_10s_1MB.mp4\" type=\"video/mp4\"> \
             </video><br>Listen it: <audio controls src=\"//interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3\"> \
             </audio> \
