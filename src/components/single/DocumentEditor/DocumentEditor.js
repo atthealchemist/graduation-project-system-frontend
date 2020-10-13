@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useState} from "react";
+import React, {useCallback, useEffect, useMemo, useState} from "react";
 import {Editable, Slate, withReact} from "slate-react";
 import {createEditor, Transforms} from "slate";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -131,12 +131,16 @@ const Leaf = ({attributes, children, leaf}) => {
 };
 
 
-const DocumentEditor = ({document, documentFormat = 'html', readOnly, onContentChanged, onFormatChanged}) => {
-    const content = document.content;
-    const slateContent = convertFromHtmlToSlate(content);
+const DocumentEditor = ({document = {content: ''}, documentFormat = 'html', readOnly, onContentChanged, onFormatChanged}) => {
 
-    const [value, setValue] = useState(slateContent);
+    const [value, setValue] = useState(initialValue);
     const [format, setFormat] = useState(documentFormat);
+
+    const componentDidMount = () => {
+        setValue(convertFromHtmlToSlate(document.content));
+    };
+
+    useEffect(componentDidMount, [document])
 
     const editor = useMemo(() => withHtml(withHistory(withReact(createEditor()))), []);
 

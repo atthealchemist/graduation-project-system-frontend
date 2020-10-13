@@ -1,31 +1,14 @@
-import axios from 'axios';
+import * as axios from "axios";
+import {API_URL} from "./config";
 
-import BaseApiInterface from './base';
+export const fetchDocumentById = (docId, onDocumentFetched) => {
+    axios({
+        url: `${API_URL}/documents/${docId}`,
+        method: 'GET',
+        mode: 'no-cors'
+    })
+        .catch(e => console.error(e))
+        .then(res => res.data)
+        .then(data => onDocumentFetched(data));
 
-class DocumentApiInterface extends BaseApiInterface {
-
-
-    getDocument(){
-
-    }
-
-    listDocuments(){
-        axios.get(this.url)
-            .catch(e => console.log(e))
-            .then(res => res.data)
-            .then(data => console.log(`Got list of  documents: ${data.json()}`))
-    }
-
-    createDocument(params){
-
-    }
-
-    updateDocument(params){
-
-    }
-
-    deleteDocument(params){
-
-    }
-
-}
+};

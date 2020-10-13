@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Box, TextField, Card, CardActions, CardContent, CardHeader, Typography} from "@material-ui/core";
 import {Visibility, VisibilityOff} from "@material-ui/icons";
 import {TooltipedButton} from "../../single/TooltipedButton/TooltipedButton";
@@ -9,27 +9,51 @@ import Button from "@material-ui/core/Button";
 import {GoogleLogin} from 'react-google-login';
 
 import config from '../../../config.json';
+import {loginUser} from "../../../api/user";
 
 const LoginPage = ({onAuthChanged}) => {
 
     const [showPassword, setShowPassword] = useState();
+    const [login, setLogin] = useState('')
+    const [password, setPassword] = useState('')
+
+    const googleClientId = config.oauth.googleClientId;
+
+
+    const componentDidMount = () => {
+        if(localStorage.getItem('token') !== null) {
+            onAuthChanged(true);
+        }
+    };
+
+    useEffect(componentDidMount);
 
     const handlePasswordShow = () => {
         setShowPassword(!showPassword);
         this.setState({showPassword: !this.state.showPassword});
     };
 
-    const handleLogin = () => onAuthChanged(true);
+    const handleLoginClick = () => {
+        handleLogin(login, password);
+    };
+
+    const handleLogin = (user_login, user_password, client_id = 'app', display_name = user_login) => {
+
+        loginUser({login: user_login, password: user_password, client_id: client_id, client_secret: display_name});
+        if(localStorage.getItem('token') !== null) {
+            onAuthChanged(true);
+        }
+    };
 
     const handleGoogleLogin = ({profileObj}) => {
         console.log("Successfully logged in with Google", profileObj);
         const credentials = {
-            email: profileObj.email,
+            login: profileObj.email,
             displayName: profileObj.name,
             password: profileObj.googleId
         };
         console.log("Google login credentials", credentials);
-        onAuthChanged(true);
+        handleLogin(credentials.login, credentials.password, googleClientId, credentials.displayName);
     };
 
     const handleGoogleLoginError = (res) => {
@@ -38,7 +62,6 @@ const LoginPage = ({onAuthChanged}) => {
 
     const handleCancel = () => onAuthChanged(false);
 
-    const googleClientId = config.oauth.googleClientId;
 
     return <Box mt={'6em'}>
         <Card
@@ -51,8 +74,14 @@ const LoginPage = ({onAuthChanged}) => {
                 subheader={"Allows you to login to your account"}/>
             <CardContent>
                 <form>
-                    <TextField fullWidth margin={"normal"} required label="Username or email"
-                               defaultValue="lorem@ipsum.do"/>
+                    <TextField
+                        fullWidth
+                        margin={"normal"}
+                        required
+                        label="Username or email"
+                        placeholder="lorem@ipsum.do"
+                        onChange={(e) => setLogin(e.target.value)}
+                    />
                     <TextField fullWidth margin={"normal"} required type="password" label="Password" endadornment={
                         <InputAdornment position="end">
                             <IconButton
@@ -62,12 +91,15 @@ const LoginPage = ({onAuthChanged}) => {
                                 {showPassword ? <Visibility/> : <VisibilityOff/>}
                             </IconButton>
                         </InputAdornment>
-                    }/>
+                    }
+                               onChange={(e) => setPassword(e.target.value)}
+
+                    />
                     <br/>
                 </form>
             </CardContent>
             <CardActions>
-                <TooltipedButton component={Button} tooltip='Login' onClick={handleLogin}>
+                <TooltipedButton component={Button} tooltip='Login' onClick={handleLoginClick}>
                     Login
                 </TooltipedButton>
                 <TooltipedButton component={Button} tooltip="Cancel" onClick={handleCancel}>

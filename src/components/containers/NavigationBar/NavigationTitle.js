@@ -10,15 +10,15 @@ export const NavigationTitle = ({title, path, openDrawer, handleDrawer}) => <Box
     display={'flex'}
     alignItems={'center'}
     flexGrow={1}>
-    <IconButton
-        color="inherit"
-        aria-label="open drawer"
-        onClick={handleDrawer}
-        edge="start"
-        className={clsx(classes.menuButton, openDrawer && classes.hide)}
-    >
-        <MenuIcon/>
-    </IconButton>
+    {/*<IconButton*/}
+    {/*    color="inherit"*/}
+    {/*    aria-label="open drawer"*/}
+    {/*    onClick={handleDrawer}*/}
+    {/*    edge="start"*/}
+    {/*    className={clsx(classes.menuButton, openDrawer && classes.hide)}*/}
+    {/*>*/}
+    {/*    <MenuIcon/>*/}
+    {/*</IconButton>*/}
     <Typography variant="h6" noWrap>
         {title}
     </Typography>

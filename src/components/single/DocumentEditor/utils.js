@@ -8,6 +8,11 @@ const formatBytes = (value, fraction = 2) => {
     return parseFloat((value / Math.pow(1024, d)).toFixed(c)) + " " + ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"][d]
 };
 
+export const toBase64 = (str) => Buffer.from(str).toString('base64');
+export const fromBase64 = (encoded) => new Buffer(encoded, 'base64').toString('ascii');
+
+export const getUserFromStorage = () => JSON.parse(fromBase64(localStorage.getItem('token_user')));
+
 
 export const getFileSize = (url) => {
     let size = 0;

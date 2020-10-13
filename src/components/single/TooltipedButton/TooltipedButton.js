@@ -3,12 +3,14 @@ import {IconButton} from "@material-ui/core";
 import React, {useState} from "react";
 import {ToggleButton} from "@material-ui/lab";
 
-export const TooltipedButton = ({tooltip, color = 'primary', component = IconButton, buttonStyle, children, onClick}) => {
+export const TooltipedButton = (props) => {
+    const {tooltip, color = 'primary', component = IconButton, children, buttonStyle, ...buttonProps} = props;
+    // const {tooltip, color = 'primary', component = IconButton, buttonStyle, children, onClick} = props;
     const ButtonComponent = component;
 
     return (
         <Tooltip title={tooltip}>
-            <ButtonComponent style={buttonStyle} color={color} onClick={onClick}>{children}</ButtonComponent>
+            <ButtonComponent style={buttonStyle} {...buttonProps}>{children}</ButtonComponent>
         </Tooltip>
     );
 };

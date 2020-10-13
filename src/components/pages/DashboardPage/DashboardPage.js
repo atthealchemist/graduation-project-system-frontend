@@ -9,11 +9,13 @@ import Alert from "@material-ui/lab/Alert";
 import Snackbar from "@material-ui/core/Snackbar";
 import {DashboardBreadcrumbs} from "./DashboardBreadcrumbs";
 import {DashboardHeader} from "./DashboardHeader";
-import {DashboardFooter} from "./DashboardFooter";
+import DashboardFooter from "./DashboardFooter";
+import {getCurrentUser} from "../../../api/user";
 
 
 const DashboardPage = () => {
 
+    const [user, setUser] = useState({});
     const [documents, setDocuments] = useState([]);
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [route, setRoute] = useState([{path: '/', name: 'Dashboard'}]);
@@ -21,8 +23,12 @@ const DashboardPage = () => {
 
 
     const componentDidMount = () => {
-        fetchDocs();
-        // setRoute([{path: '/', name: 'Dashboard'}]);
+        fetchCurrentUser();
+    };
+
+    const fetchCurrentUser = () => {
+        const currentUser = JSON.parse(localStorage.getItem('token_user'));
+        setUser((prevUser) => JSON.stringify(prevUser) !== JSON.stringify(currentUser) ? currentUser : prevUser);
     };
 
     useEffect(componentDidMount);
@@ -76,11 +82,11 @@ const DashboardPage = () => {
 
     const fetchDocs = () => {
         const id = routeParams.id;
-        if(id && id.length > 1) {
+        if (id && id.length > 1) {
             console.log('id', id);
             const item = findInTree(stubTree, id);
             console.log('item', item);
-            if(item.children){
+            if (item.children) {
                 setDocuments(item.children);
             }
         } else {
@@ -99,13 +105,14 @@ const DashboardPage = () => {
         setOpenSnackbar(true);
     };
 
-    const docsCount = countChildren(documents);
+    const {documents: docs = []} = user;
+    const docsCount = countChildren(docs);
 
     return (<Container style={{marginTop: '5em'}}>
-        <DashboardHeader docsCount={docsCount} username={'Hanyuu'}/>
+        <DashboardHeader docsCount={docsCount} username={user.display_name}/>
         <DashboardBreadcrumbs routes={route}/>
         <Grid container spacing={3}>
-            {documents.map((doc, idx) => renderNode(doc, idx))}
+            {docs.map((doc, idx) => renderNode(doc, idx))}
         </Grid>
         <Snackbar open={openSnackbar} autoHideDuration={1500}
                   onClose={() => setOpenSnackbar(false)}>

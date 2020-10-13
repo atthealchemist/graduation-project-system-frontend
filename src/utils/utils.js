@@ -27,7 +27,9 @@ const findInTree = (tree, id) => {
 
 const countChildren = (children) => {
     let count = 0;
-
+    if(children == null){
+        return 0;
+    }
     children.map(child => {
         if(nodeIsDocument(child)){
             count++;

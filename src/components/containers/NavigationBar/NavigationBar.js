@@ -10,14 +10,17 @@ import {UserControls} from "./UserControls";
 import {GuestControls} from "./GuestControls";
 
 
-const NavigationBar = ({title, path, loggedIn, onAuthChanged}) => {
+const NavigationBar = ({user = {display_name: 'Guest'}, title, path, loggedIn, onAuthChanged}) => {
 
     const [openDrawer, setOpenDrawer] = useState(false);
     const [openMenu, setOpenMenu] = useState(false);
 
     const handleLogin = () => onAuthChanged(true);
 
-    const handleLogout = () => onAuthChanged(false);
+    const handleLogout = () => {
+        localStorage.clear();
+        onAuthChanged(false)
+    };
 
     const handleClickAway = () => setOpenDrawer(false);
 
@@ -47,7 +50,7 @@ const NavigationBar = ({title, path, loggedIn, onAuthChanged}) => {
                     />
                     {
                         loggedIn ?
-                            <UserControls handleMenu={handleMenu} handleLogout={handleLogout}/>
+                            <UserControls user={user} handleMenu={handleMenu} handleLogout={handleLogout}/>
                             :
                             <GuestControls handleLogin={handleLogin}/>
                     }

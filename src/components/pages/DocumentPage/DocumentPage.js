@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import Box from "@material-ui/core/Box";
 import Tooltip from "@material-ui/core/Tooltip";
 import MainContainer from "../../containers/MainContainer/MainContainer";
@@ -24,8 +24,16 @@ const DocumentPage = () => {
     const [published, setPublished] = useState(false);
     const [historyOpened, setHistoryOpened] = useState(false);
     const [snackbarText, setSnackbarText] = useState('');
-    const [document, setDocument] = useState(null);
+    const [document, setDocument] = useState('');
 
+
+    const componentDidMount = () => {
+        if(!document){
+            setupDocument(getDocumentById(stubTree, documentId));
+        }
+    };
+
+    useEffect(componentDidMount);
 
 
     const handleHistoryOpened = () => {
@@ -91,9 +99,6 @@ const DocumentPage = () => {
         },
     ];
 
-    if(!document){
-        setupDocument(getDocumentById(stubTree, documentId));
-    }
 
     const component = <MainContainer>
         <Box mb={'1em'} mt={'2em'}>

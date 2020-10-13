@@ -1,8 +1,24 @@
 import {Box, Card, CardContent, CardHeader, Typography} from "@material-ui/core";
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {AvatarEditable} from "./AvatarEditable";
+import {getCurrentUser} from "../../../api/user";
 
 const AccountPage = () => {
+    const [user, setUser] = useState(   {});
+
+    const handleUserGot = (user) => {
+        setUser(user);
+    };
+
+    const componentDidMount = () => {
+        getCurrentUser(handleUserGot)
+    };
+
+    useEffect(componentDidMount)
+
+    const renderFields = () => {
+
+    };
 
     return(
         <Box mt={'6em'}>
@@ -14,7 +30,7 @@ const AccountPage = () => {
                     boxShadow: 'none'
                 }}>
                 <CardHeader
-                    title={"Welcome aboard, Capitan!"}
+                    title={`Welcome aboard, ${user.display_name}!`}
                     subheader={"Your preferences and settings are waiting for you"}/>
             </Card>
             <Card style={{
@@ -24,7 +40,7 @@ const AccountPage = () => {
                 <CardContent>
                     <Box margin={'2em'}>
                         <AvatarEditable url={"https://lorempixel.com/200/200/"}/>
-                        <Typography>Lorem ipsum dolor sit amet, consectetur adipisicing elit. A architecto blanditiis commodi culpa, deleniti ducimus et hic incidunt minus molestias neque non ratione sint sunt tempore temporibus ullam vel voluptates!</Typography>
+
                     </Box>
                 </CardContent>
             </Card>

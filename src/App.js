@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import './App.css';
 
 import config from './config.json';
@@ -10,14 +10,14 @@ import LoginPage from "./components/pages/LoginPage/LoginPage";
 
 import {BrowserRouter as Router, Redirect, Switch, Route} from 'react-router-dom';
 
-// import DocumentApiInterface from './api/document';
-
 import RegisterPage from "./components/pages/RegisterPage/RegisterPage";
 import AdminPage from "./components/pages/AdminPage/AdminPage";
 import AccountPage from "./components/pages/AccountPage/AccountPage";
 import Modal from "@material-ui/core/Modal";
 import Card from "@material-ui/core/Card";
 import {CardHeader} from "@material-ui/core";
+import {getCurrentUser} from "./api/user";
+import {fromBase64, toBase64} from "./components/single/DocumentEditor/utils";
 
 const ServerOffModal = ({serverRunning}) => {
 
@@ -49,6 +49,13 @@ const App = () => {
     const [loggedIn, setLoggedIn] = useState(false);
 
 
+    const componentDidMount = () => {
+        getCurrentUser((user) => localStorage.setItem('token_user', JSON.stringify(user)));
+    };
+
+
+    useEffect(componentDidMount);
+
     const checkServerRunning = () => {
         const serverUrl = `http://${config.server.url}:${config.server.port}`;
         fetch(serverUrl)
@@ -62,12 +69,20 @@ const App = () => {
 
     const [serverRunning, setServerRunning] = useState(false);
 
-    const handleAuthChanged = (status) => setLoggedIn(status);
+    const handleAuthChanged = (status) => {
+        if(!status){
+            localStorage.clear();
+        }
+        setLoggedIn(status);
+    };
+
+    let user = JSON.parse(localStorage.getItem('token_user')) || {};
+    // console.log('user', user);
 
     return (
         <Router>
             <div className="App">
-                <NavigationBar loggedIn={loggedIn} title={APP_TITLE} onAuthChanged={handleAuthChanged}/>
+                <NavigationBar user={user} loggedIn={loggedIn} title={APP_TITLE} onAuthChanged={handleAuthChanged}/>
                 <Switch>
                     <Route exact path={'/'}>
                         {loggedIn ? <Redirect to="/dashboard"/> :
