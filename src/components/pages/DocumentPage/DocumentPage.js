@@ -7,7 +7,7 @@ import AddIcon from "@material-ui/icons/Add";
 import Fab from "@material-ui/core/Fab";
 import {Link, useParams, useRouteMatch} from "react-router-dom";
 import {findInTree} from "../../../utils/utils";
-import DocumentEditor from "../../single/DocumentEditor/DocumentEditor";
+import {DocumentEditor} from "../../single/DocumentEditor/DocumentEditor";
 import PublishDialog from "../../single/PublishDialog/PublishDialog";
 import DocumentChangeDrawer from "../../containers/DocumentChangeDrawer/DocumentChangeDrawer";
 import {DocumentToolbar} from "./DocumentToolbar";

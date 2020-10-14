@@ -10,6 +10,21 @@ const serialize = node => {
     const children = node.length > 0 ? node.map(n => serialize(n)).join('') : node.children.map(n => serialize(n)).join('');
 
     switch (node.type) {
+        case 'list-item':
+            return `<li>${children}</li>`
+        case 'heading-one':
+            return `<h1>${children}</h1>`
+        case 'heading-two':
+            return `<h2>${children}</h2>`
+        case 'heading-three':
+            return `<h3>${children}</h3>`
+        case 'heading-four':
+            return `<h4>${children}</h4>`
+        case 'heading-five':
+            return `<h5>${children}</h5>`
+        case 'heading-six':
+            return `<h6>${children}</h6>`
+        case 'block-quote':
         case 'quote':
             return `<blockquote><p>${children}</p></blockquote>`
         case 'paragraph':

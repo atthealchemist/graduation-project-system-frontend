@@ -6,7 +6,7 @@ import {TooltipedButton} from "../../single/TooltipedButton/TooltipedButton";
 import {Check, Edit} from "@material-ui/icons";
 
 export const EditableTitle = ({content, onTitleChanged}) => {
-    const [title, setTitle] = useState(content);
+    const [title, setTitle] = useState(content || "New document");
     const [editMode, setEditMode] = useState(false);
 
     const onChangedTitleSubmit = () => {
@@ -28,6 +28,7 @@ export const EditableTitle = ({content, onTitleChanged}) => {
                 ? <TextField
                     value={title}
                     placeholder={"Set new title"}
+                    onKeyDown={(event => event.key === 'Enter' && onChangedTitleSubmit())}
                     onChange={(event) => setTitle(event.target.value)}/>
                 : <Typography variant="h6">{title}</Typography>}
             <TooltipedButton

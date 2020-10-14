@@ -10,52 +10,70 @@ import ToggleButton from "@material-ui/lab/ToggleButton";
 import ChromeReaderModeIcon from "@material-ui/icons/ChromeReaderMode";
 import ShareIcon from "@material-ui/icons/Share";
 import GetAppIcon from "@material-ui/icons/GetApp";
-import React from "react";
+import React, {useState} from "react";
 
-export const DocumentToolbar = ({document, onChange, onDocumentPublish, onTitleChanged, onHistoryOpened, readOnly}) =>
-    <Toolbar
-        variant="dense">
-        <Box display={"flex"} width={"100%"}>
-            <EditableTitle content={document.name} onTitleChanged={onTitleChanged}/>
-            <Author image={"https://lorempixel.com/25/25/"} name={document.author.displayName}/>
-            <Divider orientation="vertical" flexItem/>
-            <Box display={"flex"} ml={1}>
-                <TooltipedButton
-                    onClick={onHistoryOpened}
-                    buttonStyle={{padding: ".25em .5em"}}
-                    tooltip={"Changes"}>
-                    <History/>
-                </TooltipedButton>
-                <Tooltip title={`Read only mode ${readOnly ? "enabled" : "disabled"}`}>
-                    <ToggleButton
-                        style={{
-                            border: "1px solid transparent",
-                            borderRadius: "50%",
-                            padding: ".75em"
-                        }}
-                        color={"primary"}
-                        selected={readOnly}
-                        onChange={onChange}
-                        value={"ro"}>
-                        <ChromeReaderModeIcon/>
-                    </ToggleButton>
-                </Tooltip>
-                <TooltipedButton
-                    buttonStyle={{padding: ".25em .5em"}}
-                    tooltip={"Share"}>
-                    <ShareIcon/>
-                </TooltipedButton>
-                <TooltipedButton
-                    buttonStyle={{padding: ".25em .5em"}}
-                    tooltip={"Download"}>
-                    <GetAppIcon/>
-                </TooltipedButton>
-                <TooltipedButton
-                    onClick={onDocumentPublish}
-                    buttonStyle={{padding: ".25em .5em"}}
-                    tooltip={"Publish"}>
-                    <Publish/>
-                </TooltipedButton>
+export const DocumentToolbar = (
+    {
+        document = { name: 'New document', content: ''},
+        author = {name: 'Guest', avatarUrl: "https://lorempixel.com/25/25"},
+        onChange,
+        onDocumentPublish,
+        onTitleChanged,
+        onHistoryOpened,
+        readOnly
+    }
+) => {
+
+    const [documentAuthor, setDocumentAuthor] = useState(author);
+    const [userDocument, setUserDocument] = useState(document);
+
+    return (
+        <Toolbar
+            variant="dense">
+            <Box display={"flex"} width={"100%"}>
+                <EditableTitle content={userDocument.name} onTitleChanged={onTitleChanged}/>
+                <Author image={documentAuthor.avatarUrl} name={documentAuthor.name}/>
+                <Divider orientation="vertical" flexItem/>
+                <Box display={"flex"} ml={1}>
+                    <TooltipedButton
+                        onClick={onHistoryOpened}
+                        buttonStyle={{padding: ".25em .5em"}}
+                        tooltip={"Changes"}>
+                        <History/>
+                    </TooltipedButton>
+                    <Tooltip title={`Read only mode ${readOnly ? "enabled" : "disabled"}`}>
+                        <ToggleButton
+                            style={{
+                                border: "1px solid transparent",
+                                borderRadius: "50%",
+                                padding: ".75em"
+                            }}
+                            color={"primary"}
+                            selected={readOnly}
+                            onChange={onChange}
+                            value={"ro"}>
+                            <ChromeReaderModeIcon/>
+                        </ToggleButton>
+                    </Tooltip>
+                    <TooltipedButton
+                        buttonStyle={{padding: ".25em .5em"}}
+                        tooltip={"Share"}>
+                        <ShareIcon/>
+                    </TooltipedButton>
+                    <TooltipedButton
+                        buttonStyle={{padding: ".25em .5em"}}
+                        tooltip={"Download"}>
+                        <GetAppIcon/>
+                    </TooltipedButton>
+                    <TooltipedButton
+                        onClick={onDocumentPublish}
+                        buttonStyle={{padding: ".25em .5em"}}
+                        tooltip={"Publish"}>
+                        <Publish/>
+                    </TooltipedButton>
+                </Box>
             </Box>
-        </Box>
-    </Toolbar>;
+        </Toolbar>
+    );
+
+};

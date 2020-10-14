@@ -30,7 +30,7 @@ import Paper from "@material-ui/core/Paper";
 import {withHistory} from "slate-history";
 import Box from "@material-ui/core/Box";
 import axios from "axios";
-import {MarkButton} from "./components/MarkButton";
+import {MarkButton, toggleMark} from "./components/MarkButton";
 import {ActionButton} from "./components/ActionButton";
 import {BlockButton} from "./components/BlockButton";
 import ChoiceSelect from "../ChoiceSelect/ChoiceSelect";
@@ -39,9 +39,11 @@ import {AudioElement} from "./components/AudioElement";
 import {VideoElement} from "./components/VideoElement";
 import {convertFromHtmlToSlate, convertFromSlateToHtml} from "./utils";
 import {ImageElement} from "./components/ImageElement";
+import isHotkey from "is-hotkey";
+import {HOTKEYS} from "./shortcuts";
 
 const withHtml = editor => {
-    const { insertData, isInline, isVoid } = editor
+    const {insertData, isInline, isVoid} = editor
 
     editor.isInline = element => {
         return element.type === 'link' ? true : isInline(element)
@@ -109,7 +111,7 @@ const Leaf = ({attributes, children, leaf}) => {
     }
 
     if (leaf.code) {
-        children = <pre><code>{children}</code></pre>
+        children = <code>{children}</code>
     }
 
     if (leaf.italic) {
@@ -131,13 +133,33 @@ const Leaf = ({attributes, children, leaf}) => {
 };
 
 
-const DocumentEditor = ({document = {content: ''}, documentFormat = 'html', readOnly, onContentChanged, onFormatChanged}) => {
+export const DocumentEditor = (
+    {
+        document = {content: '<body> </body>'},
+        documentFormat = 'html',
+        readOnly,
+        onContentChanged,
+        onFormatChanged
+    }
+) => {
 
-    const [value, setValue] = useState(initialValue);
+    const [value, setValue] = useState([]);
     const [format, setFormat] = useState(documentFormat);
 
     const componentDidMount = () => {
-        setValue(convertFromHtmlToSlate(document.content));
+        let initialValue = [
+            {
+                children: [
+                    {
+                        text: ""
+                    }
+                ]
+            }
+        ];
+        if(document.content){
+            initialValue = convertFromHtmlToSlate(document.content);
+        }
+        setValue(initialValue);
     };
 
     useEffect(componentDidMount, [document])
@@ -149,8 +171,11 @@ const DocumentEditor = ({document = {content: ''}, documentFormat = 'html', read
 
     const handleContentChanged = (content) => {
         setValue(content);
-        const html = convertFromSlateToHtml(content);
-        onContentChanged(html);
+        setTimeout(() => {
+            const html = convertFromSlateToHtml(content);
+            onContentChanged(html);
+        }, 1000);
+
     };
 
     const handleContentFormatRetrieved = (result) => {
@@ -160,7 +185,7 @@ const DocumentEditor = ({document = {content: ''}, documentFormat = 'html', read
     };
 
     const handleContentFormatChanged = (newFormat) => {
-        const content = initialValue;
+        const content = value;
 
         console.log('src', content);
         axios.post('http://localhost:8000/converter/convert', {
@@ -185,7 +210,7 @@ const DocumentEditor = ({document = {content: ''}, documentFormat = 'html', read
         editor.history = {redos: [], undos: []};
 
         // Reset things back to their original (empty) state
-        setValue(initialValue);
+        setValue(value);
     };
 
     const onKeyDown = (event) => {
@@ -260,49 +285,18 @@ const DocumentEditor = ({document = {content: ''}, documentFormat = 'html', read
                     spellCheck
                     autoFocus
                     // onSubmit={e => onSubmit(e)}
-                    // onKeyDown={e => onKeyDown(e)}
+                    onKeyDown={event => {
+                        for (const hotkey in HOTKEYS) {
+                            if (isHotkey(hotkey, event)) {
+                                event.preventDefault()
+                                const mark = HOTKEYS[hotkey]
+                                toggleMark(editor, mark)
+                            }
+                        }
+                    }}
                 />
             </Slate>
         </Paper>
     );
 
 };
-
-const initialValue = [
-    {
-        type: 'paragraph',
-        children: [
-            {text: 'This is editable '},
-            {text: 'rich', bold: true},
-            {text: ' text, '},
-            {text: 'much', italic: true},
-            {text: ' better than a '},
-            {text: '<textarea>', code: true},
-            {text: '!'},
-        ],
-    },
-    {
-        type: 'paragraph',
-        children: [
-            {
-                text:
-                    "Since it's rich text, you can do things like turn a selection of text ",
-            },
-            {text: 'bold', bold: true},
-            {
-                text:
-                    ', or add a semantically rendered block quote in the middle of the page, like this:',
-            },
-        ],
-    },
-    {
-        type: 'block-quote',
-        children: [{text: 'A wise quote.'}],
-    },
-    {
-        type: 'paragraph',
-        children: [{text: 'Try it out for yourself!'}],
-    },
-]
-
-export default DocumentEditor;

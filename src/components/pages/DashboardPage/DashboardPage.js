@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Container, Grid} from "@material-ui/core";
+import {Container, Grid, Typography} from "@material-ui/core";
 
 import {stubTree} from '../../containers/TreeDrawer/stub';
 import {useParams} from "react-router-dom";
@@ -11,6 +11,10 @@ import {DashboardBreadcrumbs} from "./DashboardBreadcrumbs";
 import {DashboardHeader} from "./DashboardHeader";
 import DashboardFooter from "./DashboardFooter";
 import {getCurrentUser} from "../../../api/user";
+
+
+const DashboardPlaceholder = () => <Typography variant={"h3"}>No documents. Hover on blue round button to add new
+    one!</Typography>
 
 
 const DashboardPage = () => {
@@ -110,17 +114,20 @@ const DashboardPage = () => {
 
     return (<Container style={{marginTop: '5em'}}>
         <DashboardHeader docsCount={docsCount} username={user.display_name}/>
-        <DashboardBreadcrumbs routes={route}/>
-        <Grid container spacing={3}>
-            {docs.map((doc, idx) => renderNode(doc, idx))}
-        </Grid>
+        {docsCount > 0 && <>
+            <DashboardBreadcrumbs routes={route}/>
+            <Grid container spacing={3}>
+                {docs.map((doc, idx) => renderNode(doc, idx))}
+            </Grid>
+        </>}
+        {docsCount < 1 && <DashboardPlaceholder/>}
         <Snackbar open={openSnackbar} autoHideDuration={1500}
                   onClose={() => setOpenSnackbar(false)}>
             <Alert severity="success">
                 Copied to clipboard!
             </Alert>
         </Snackbar>
-        <DashboardFooter/>
+        <DashboardFooter />
 
     </Container>);
 
